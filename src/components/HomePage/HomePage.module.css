@@ -1,0 +1,489 @@
+.home-page {
+  min-height: 100vh;
+  background: var(--pixel-cream);
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== HERO SECTION ===== */
+.hero-section {
+  background: 
+    linear-gradient(180deg, var(--pixel-blue) 0%, var(--pixel-blue-dark) 100%);
+  padding: 60px 20px 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 8px solid var(--pixel-dark);
+}
+
+/* Pixel cloud decoration */
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 10%;
+  width: 80px;
+  height: 40px;
+  background: var(--pixel-white);
+  box-shadow: 
+    20px 10px 0 var(--pixel-white),
+    -20px 10px 0 var(--pixel-white),
+    120px 30px 0 var(--pixel-white),
+    140px 40px 0 var(--pixel-white),
+    100px 40px 0 var(--pixel-white);
+  opacity: 0.8;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-title {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 2.2rem;
+  color: var(--pixel-white);
+  text-shadow: 
+    4px 4px 0 var(--pixel-dark),
+    -1px -1px 0 var(--pixel-dark),
+    1px -1px 0 var(--pixel-dark),
+    -1px 1px 0 var(--pixel-dark);
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  line-height: 1.4;
+}
+
+.hero-subtitle {
+  font-family: 'VT323', monospace;
+  font-size: 1.8rem;
+  color: var(--pixel-yellow);
+  margin-bottom: 25px;
+  text-shadow: 2px 2px 0 var(--pixel-dark);
+}
+
+/* Pixel stars animation */
+.hero-snow-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, var(--pixel-yellow), transparent),
+    radial-gradient(2px 2px at 80px 60px, var(--pixel-white), transparent),
+    radial-gradient(2px 2px at 140px 20px, var(--pixel-yellow), transparent),
+    radial-gradient(2px 2px at 200px 80px, var(--pixel-white), transparent),
+    radial-gradient(3px 3px at 260px 40px, var(--pixel-yellow), transparent),
+    radial-gradient(2px 2px at 320px 70px, var(--pixel-white), transparent);
+  background-size: 350px 100px;
+  animation: twinkle 2s steps(2) infinite;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0.4; }
+}
+
+/* ===== SECTIONS ===== */
+.section {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1.2rem;
+  color: var(--pixel-dark);
+  margin-bottom: 30px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: var(--pixel-green);
+  box-shadow: 70px 0 0 var(--pixel-orange), -70px 0 0 var(--pixel-blue);
+}
+
+/* ===== NEW APPS SECTION ===== */
+.new-apps-section {
+  background: var(--pixel-white);
+  border: 4px solid var(--pixel-dark);
+  margin: 20px auto;
+  box-shadow: 8px 8px 0 var(--pixel-shadow);
+  position: relative;
+}
+
+/* Corner decorations */
+.new-apps-section::before,
+.new-apps-section::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--pixel-orange);
+  border: 2px solid var(--pixel-dark);
+}
+
+.new-apps-section::before {
+  top: -6px;
+  left: -6px;
+}
+
+.new-apps-section::after {
+  top: -6px;
+  right: -6px;
+}
+
+.new-apps-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.new-app-link {
+  font-family: 'VT323', monospace;
+  color: var(--pixel-blue-dark);
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: all 0.1s;
+  padding: 8px 16px;
+  border: 2px solid transparent;
+}
+
+.new-app-link:hover {
+  color: var(--pixel-white);
+  background: var(--pixel-blue);
+  border-color: var(--pixel-dark);
+}
+
+.new-badge {
+  font-family: 'Press Start 2P', cursive;
+  background: var(--pixel-red);
+  color: var(--pixel-white);
+  padding: 4px 10px;
+  font-size: 0.6rem;
+  font-weight: bold;
+  margin-right: 10px;
+  border: 2px solid var(--pixel-dark);
+  box-shadow: 2px 2px 0 var(--pixel-shadow);
+  animation: blink 1s steps(2) infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ===== GAMES GRID ===== */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  padding: 15px;
+}
+
+.featured-grid {
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+/* ===== FEATURED SECTION ===== */
+.featured-section {
+  background: var(--pixel-tan);
+  border: 4px solid var(--pixel-dark);
+  margin: 30px auto;
+  box-shadow: 8px 8px 0 var(--pixel-shadow);
+  position: relative;
+}
+
+.featured-section::before {
+  content: '★ FEATURED ★';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  background: var(--pixel-yellow);
+  color: var(--pixel-dark);
+  padding: 6px 20px;
+  border: 3px solid var(--pixel-dark);
+  box-shadow: 3px 3px 0 var(--pixel-shadow);
+}
+
+/* ===== ALL GAMES SECTION ===== */
+.all-games-section {
+  background: var(--pixel-white);
+  border: 4px solid var(--pixel-dark);
+  margin: 30px auto;
+  box-shadow: 8px 8px 0 var(--pixel-shadow);
+  position: relative;
+}
+
+.all-games-section::before {
+  content: '🎮 ALL GAMES 🎮';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  background: var(--pixel-green);
+  color: var(--pixel-white);
+  padding: 6px 20px;
+  border: 3px solid var(--pixel-dark);
+  box-shadow: 3px 3px 0 var(--pixel-shadow);
+}
+
+/* ===== LOADING ===== */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--pixel-cream);
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 6px solid var(--pixel-tan);
+  border-top-color: var(--pixel-green);
+  border-radius: 0;
+  animation: pixel-load 0.6s steps(8) infinite;
+}
+
+.loading-container::after {
+  content: 'LOADING...';
+  margin-top: 20px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.9rem;
+  color: var(--pixel-dark);
+  animation: blink 1s steps(2) infinite;
+}
+
+@keyframes pixel-load {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: var(--pixel-dark);
+  padding: 50px 20px;
+  text-align: center;
+  margin-top: 40px;
+  border-top: 8px solid var(--pixel-brown);
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--pixel-green) 0px,
+    var(--pixel-green) 20px,
+    var(--pixel-yellow) 20px,
+    var(--pixel-yellow) 40px,
+    var(--pixel-orange) 40px,
+    var(--pixel-orange) 60px,
+    var(--pixel-blue) 60px,
+    var(--pixel-blue) 80px
+  );
+}
+
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--pixel-dark);
+  text-decoration: none;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: all 0.1s;
+  background: var(--pixel-cream);
+  padding: 15px 20px;
+  border: 3px solid var(--pixel-dark);
+  box-shadow: 4px 4px 0 var(--pixel-shadow);
+  min-width: 100px;
+}
+
+.social-link:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--pixel-shadow);
+  background: var(--pixel-yellow);
+}
+
+.social-link:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--pixel-shadow);
+}
+
+.footer-text {
+  color: var(--pixel-cream);
+  margin-bottom: 15px;
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+}
+
+.footer-text a {
+  color: var(--pixel-yellow);
+  text-decoration: none;
+  border-bottom: 2px solid var(--pixel-yellow);
+}
+
+.footer-text a:hover {
+  color: var(--pixel-orange);
+  border-color: var(--pixel-orange);
+}
+
+.copyright {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.6rem;
+  color: var(--pixel-cream);
+  background: var(--pixel-brown);
+  padding: 12px 25px;
+  display: inline-block;
+  border: 3px solid var(--pixel-shadow);
+  margin-top: 20px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .home-page {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+  
+  .hero-title {
+    font-size: 1.2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.4rem;
+  }
+  
+  .hero-section {
+    padding: 40px 15px 60px;
+    min-height: auto;
+  }
+  
+  .games-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .section {
+    padding: 30px 15px;
+  }
+  
+  .section-title {
+    font-size: 0.9rem;
+  }
+  
+  .featured-section,
+  .all-games-section,
+  .new-apps-section {
+    margin: 20px 10px;
+  }
+
+  .featured-section::before,
+  .all-games-section::before {
+    font-size: 0.5rem;
+    padding: 5px 12px;
+    white-space: nowrap;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .footer {
+    padding: 40px 15px;
+  }
+
+  .social-links {
+    gap: 10px;
+  }
+
+  .social-link {
+    padding: 12px 15px;
+    font-size: 1rem;
+    min-width: 80px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 1rem;
+  }
+
+  .section-title {
+    font-size: 0.75rem;
+  }
+
+  .featured-section::before {
+    content: '★ FEATURED';
+    font-size: 0.45rem;
+    padding: 4px 10px;
+  }
+
+  .all-games-section::before {
+    content: '🎮 GAMES';
+    font-size: 0.45rem;
+    padding: 4px 10px;
+  }
+
+  .games-grid {
+    padding: 10px;
+    gap: 15px;
+  }
+
+  .section {
+    padding: 25px 10px;
+  }
+
+  .featured-section,
+  .all-games-section,
+  .new-apps-section {
+    margin: 15px 5px;
+  }
+}

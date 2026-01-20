@@ -1,0 +1,343 @@
+.game-form-page {
+  min-height: 100vh;
+  background: var(--pixel-cream);
+  padding: 30px 20px;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-header {
+  margin-bottom: 30px;
+}
+
+.form-header .back-link {
+  font-family: 'VT323', monospace;
+  color: var(--pixel-blue);
+  text-decoration: none;
+  font-size: 1.3rem;
+  display: inline-block;
+  margin-bottom: 15px;
+  padding: 5px 10px;
+  border: 2px solid transparent;
+  transition: all 0.1s;
+}
+
+.form-header .back-link:hover {
+  border-color: var(--pixel-blue);
+}
+
+.form-header h1 {
+  font-family: 'Press Start 2P', cursive;
+  color: var(--pixel-dark);
+  margin: 0;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.game-form {
+  background: var(--pixel-white);
+  border: 4px solid var(--pixel-dark);
+  box-shadow: 6px 6px 0 var(--pixel-shadow);
+  overflow: hidden;
+}
+
+.form-section {
+  padding: 30px;
+  border-bottom: 3px solid var(--pixel-tan);
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+}
+
+.form-section h3 {
+  font-family: 'Press Start 2P', cursive;
+  color: var(--pixel-dark);
+  margin: 0 0 20px 0;
+  font-size: 0.7rem;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--pixel-green);
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  font-family: 'Press Start 2P', cursive;
+  font-weight: bold;
+  color: var(--pixel-brown);
+  margin-bottom: 10px;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+}
+
+.form-group input[type="text"],
+.form-group input[type="url"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 3px solid var(--pixel-dark);
+  background: var(--pixel-cream);
+  color: var(--pixel-dark);
+  caret-color: var(--pixel-dark);
+  -webkit-text-fill-color: var(--pixel-dark);
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+  transition: all 0.1s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--pixel-blue);
+  box-shadow: 4px 4px 0 var(--pixel-tan);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  color: var(--pixel-brown);
+  margin-top: 5px;
+}
+
+.help-text {
+  display: block;
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  color: var(--pixel-brown);
+  margin-top: 5px;
+}
+
+/* Image Upload */
+.image-upload-area {
+  border: 3px dashed var(--pixel-dark);
+  background: var(--pixel-cream);
+  padding: 25px;
+  text-align: center;
+  margin-bottom: 15px;
+  transition: all 0.1s;
+}
+
+.image-upload-area:hover {
+  border-color: var(--pixel-green);
+  background: var(--pixel-white);
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 200px;
+  border: 3px solid var(--pixel-dark);
+  margin-bottom: 15px;
+}
+
+.image-upload-area input[type="file"] {
+  cursor: pointer;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+}
+
+.uploading {
+  font-family: 'Press Start 2P', cursive;
+  color: var(--pixel-blue);
+  font-weight: bold;
+  margin-left: 10px;
+  font-size: 0.6rem;
+  animation: blink 1s steps(2) infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Platforms Grid */
+.platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.platform-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  background: var(--pixel-tan);
+  border: 3px solid var(--pixel-dark);
+  cursor: pointer;
+  transition: all 0.1s;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  font-weight: bold;
+  box-shadow: 3px 3px 0 var(--pixel-shadow);
+}
+
+.platform-checkbox:hover {
+  background: var(--pixel-yellow);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--pixel-shadow);
+}
+
+.platform-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--pixel-green);
+}
+
+/* Checkbox Group */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+  padding: 10px 15px;
+  background: var(--pixel-cream);
+  border: 2px solid var(--pixel-brown);
+  transition: all 0.1s;
+}
+
+.checkbox-label:hover {
+  background: var(--pixel-tan);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--pixel-green);
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  padding: 25px 30px;
+  background: var(--pixel-tan);
+  border-top: 3px solid var(--pixel-dark);
+}
+
+.cancel-btn {
+  font-family: 'Press Start 2P', cursive;
+  padding: 12px 25px;
+  background: var(--pixel-brown);
+  color: var(--pixel-white);
+  border: 3px solid var(--pixel-dark);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: all 0.1s;
+  box-shadow: 3px 3px 0 var(--pixel-shadow);
+  text-transform: uppercase;
+}
+
+.cancel-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--pixel-shadow);
+}
+
+.submit-btn {
+  font-family: 'Press Start 2P', cursive;
+  padding: 12px 25px;
+  background: var(--pixel-green);
+  color: var(--pixel-white);
+  border: 3px solid var(--pixel-dark);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: all 0.1s;
+  box-shadow: 4px 4px 0 var(--pixel-green-dark);
+  text-transform: uppercase;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--pixel-green-dark);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--pixel-green-dark);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--pixel-brown);
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--pixel-cream);
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--pixel-tan);
+  border-top-color: var(--pixel-green);
+  animation: pixel-spin 0.5s steps(8) infinite;
+}
+
+@keyframes pixel-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .game-form-page {
+    padding: 15px;
+  }
+  
+  .form-section {
+    padding: 20px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .cancel-btn,
+  .submit-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .platforms-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

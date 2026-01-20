@@ -1,0 +1,177 @@
+.game-card {
+  background: var(--pixel-white);
+  border: 4px solid var(--pixel-dark);
+  overflow: hidden;
+  box-shadow: 6px 6px 0 var(--pixel-shadow);
+  transition: all 0.1s;
+  position: relative;
+}
+
+.game-card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0 var(--pixel-shadow);
+}
+
+.game-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 4px 4px 0 var(--pixel-shadow);
+}
+
+.game-card.featured {
+  border-color: var(--pixel-yellow);
+  background: linear-gradient(135deg, var(--pixel-white) 0%, #fff9e6 100%);
+}
+
+.game-card.featured::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--pixel-yellow) 0px,
+    var(--pixel-yellow) 8px,
+    var(--pixel-orange) 8px,
+    var(--pixel-orange) 16px
+  );
+}
+
+.game-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.game-card-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-bottom: 4px solid var(--pixel-dark);
+  background: var(--pixel-tan);
+}
+
+.game-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s;
+}
+
+.game-card:hover .game-card-image {
+  transform: scale(1.05);
+}
+
+/* Pixel-style badges */
+.game-badge {
+  position: absolute;
+  top: 10px;
+  padding: 5px 12px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.5rem;
+  font-weight: bold;
+  color: var(--pixel-white);
+  border: 2px solid var(--pixel-dark);
+  box-shadow: 2px 2px 0 var(--pixel-shadow);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.game-badge.new {
+  left: 10px;
+  background: var(--pixel-red);
+  animation: badge-pulse 1.5s steps(2) infinite;
+}
+
+.game-badge.featured {
+  right: 10px;
+  background: var(--pixel-yellow);
+  color: var(--pixel-dark);
+}
+
+@keyframes badge-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.game-card-content {
+  padding: 18px;
+}
+
+.game-card-title {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.8rem;
+  color: var(--pixel-dark);
+  margin-bottom: 12px;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.game-card-description {
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  color: var(--pixel-brown);
+  line-height: 1.4;
+  margin-bottom: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.game-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 2px dashed var(--pixel-tan);
+}
+
+.game-category {
+  font-family: 'VT323', monospace;
+  background: var(--pixel-purple);
+  color: var(--pixel-white);
+  padding: 5px 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 2px solid var(--pixel-dark);
+  box-shadow: 2px 2px 0 var(--pixel-shadow);
+}
+
+.game-platforms {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.platform-badge {
+  font-family: 'VT323', monospace;
+  background: var(--pixel-green);
+  color: var(--pixel-white);
+  padding: 4px 10px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border: 2px solid var(--pixel-dark);
+  box-shadow: 1px 1px 0 var(--pixel-shadow);
+}
+
+/* Hover highlight effect */
+.game-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.1s;
+}
+
+.game-card:hover::after {
+  background: rgba(255, 255, 255, 0.1);
+}

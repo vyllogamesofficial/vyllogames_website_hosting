@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+:root {
+  /* Pixel-retro color palette - warm & inviting */
+  --pixel-cream: #f5e6c8;
+  --pixel-tan: #e8d4a8;
+  --pixel-brown: #8b7355;
+  --pixel-dark: #4a3728;
+  --pixel-green: #7cb342;
+  --pixel-green-dark: #558b2f;
+  --pixel-blue: #5c9dc4;
+  --pixel-blue-dark: #3d7a9e;
+  --pixel-orange: #e67e22;
+  --pixel-orange-dark: #c0392b;
+  --pixel-purple: #9b59b6;
+  --pixel-red: #e74c3c;
+  --pixel-yellow: #f1c40f;
+  --pixel-white: #fefef9;
+  --pixel-shadow: #2c1810;
+  
+  /* Pixel border style */
+  --pixel-border: 4px solid var(--pixel-dark);
+  --pixel-border-light: 3px solid var(--pixel-brown);
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  font-family: 'VT323', monospace;
+  background: var(--pixel-cream);
+  image-rendering: pixelated;
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
