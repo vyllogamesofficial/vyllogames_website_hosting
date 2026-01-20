@@ -88,6 +88,11 @@ async function startServer() {
 
   // ============ ROUTES ============
 
+  // Root route for Vercel health check
+  app.get('/', (req, res) => {
+    res.json({ status: 'ok', message: 'Game Ads API Server', version: '1.0.0' });
+  });
+
   app.use('/api/auth', authRoutes);
   app.use('/api/games', gameRoutes);
   app.use('/api/upload', uploadRoutes);
