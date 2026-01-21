@@ -1,3 +1,9 @@
+.social-logo {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
 .admin-dashboard {
   min-height: 100vh;
   background: var(--pixel-cream);

@@ -1,3 +1,9 @@
+.platform-logo {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
 .game-detail-page {
   min-height: 100vh;
   background: var(--pixel-cream);

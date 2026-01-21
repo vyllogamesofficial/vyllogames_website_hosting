@@ -1,3 +1,8 @@
+// Platform Links APIs
+export const platformLinksApi = {
+  get: () => api.get('/platform-links'),
+  update: (data) => api.post('/platform-links/update', data),
+};
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -34,6 +39,7 @@ export const uploadApi = {
 // Auth APIs
 export const authApi = {
   getMe: () => api.get('/auth/me'),
+  updateSuperAdmin: (data) => api.post('/auth/update-super-admin', data),
 };
 
 export default api;

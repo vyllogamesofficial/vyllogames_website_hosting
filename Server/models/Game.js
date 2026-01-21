@@ -30,13 +30,28 @@ const gameSchema = new mongoose.Schema({
   },
   platforms: [{
     type: String,
-    enum: ['iOS', 'Android', 'Steam', 'Switch', 'PS4', 'PS5', 'Xbox', 'PC']
+    enum: [
+      'Google Play (Android)',
+      'App Store (Apple)',
+      'Huawei Store',
+      'Amazon App Store',
+      'PS4/PS5',
+      'XBOX',
+      'Nintendo Switch 1/2',
+      'Steam',
+      'Epic Store'
+    ]
   }],
   links: {
-    ios: { type: String, default: '' },
-    android: { type: String, default: '' },
+    googlePlay: { type: String, default: '' },
+    appStore: { type: String, default: '' },
+    huaweiStore: { type: String, default: '' },
+    amazonAppStore: { type: String, default: '' },
+    ps: { type: String, default: '' },
+    xbox: { type: String, default: '' },
+    nintendoSwitch: { type: String, default: '' },
     steam: { type: String, default: '' },
-    website: { type: String, default: '' }
+    epicStore: { type: String, default: '' }
   },
   trailerUrl: {
     type: String,

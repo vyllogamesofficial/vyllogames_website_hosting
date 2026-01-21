@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { gameApi } from '../../api';
 import toast from 'react-hot-toast';
 import styles from './AdminDashboard.module.css';
+import { platformLinksApi } from '../../api';
 
 // Server URL for static files (remove /api suffix if present)
 const getServerUrl = () => {
@@ -13,10 +14,105 @@ const getServerUrl = () => {
 const SERVER_URL = getServerUrl();
 
 const AdminDashboard = () => {
+    // Social platform links state
+    const initialPlatformLinks = {
+      TikTok: '',
+      Rednote: '',
+      YouTube: '',
+      Facebook: '',
+      Instagram: '',
+      Twitter: '',
+      Twitch: '',
+      Kick: '',
+      LinkedIn: '',
+      Discord: '',
+      Reddit: '',
+    };
+
+    // Social logo mapping
+    const SOCIAL_LOGOS = {
+      TikTok: '/src/assets/social-logos/tiktok.svg',
+      Rednote: '/src/assets/social-logos/rednote.svg',
+      YouTube: '/src/assets/social-logos/youtube.svg',
+      Facebook: '/src/assets/social-logos/facebook.svg',
+      Instagram: '/src/assets/social-logos/instagram.svg',
+      Twitter: '/src/assets/social-logos/twitter.svg',
+      Twitch: '/src/assets/social-logos/twitch.svg',
+      Kick: '/src/assets/social-logos/kick.svg',
+      LinkedIn: '/src/assets/social-logos/linkedin.svg',
+      Discord: '/src/assets/social-logos/discord.svg',
+      Reddit: '/src/assets/social-logos/reddit.svg',
+    };
+    const [platformLinks, setPlatformLinks] = useState(initialPlatformLinks);
+    const [updatingLinks, setUpdatingLinks] = useState(false);
+
+    // Load platform links from backend
+    useEffect(() => {
+      const fetchPlatformLinks = async () => {
+        try {
+          const { data } = await platformLinksApi.get();
+          // Only update known platforms
+          const links = {};
+          Object.keys(initialPlatformLinks).forEach(key => {
+            links[key] = data[key] || '';
+          });
+          setPlatformLinks(links);
+        } catch (error) {
+          toast.error('Failed to load platform links');
+        }
+      };
+      fetchPlatformLinks();
+    }, []);
+
+    // Handler for updating platform links
+    const handlePlatformLinksChange = (platform, value) => {
+      setPlatformLinks(prev => ({ ...prev, [platform]: value }));
+    };
+
+    const handleUpdatePlatformLinks = async (e) => {
+      e.preventDefault();
+      setUpdatingLinks(true);
+      try {
+        await platformLinksApi.update(platformLinks);
+        toast.success('Platform links updated successfully');
+      } catch (error) {
+        toast.error('Failed to update platform links');
+      } finally {
+        setUpdatingLinks(false);
+      }
+    };
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { logout } = useAuth();
+  const [adminUsername, setAdminUsername] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+  const [updatingCredentials, setUpdatingCredentials] = useState(false);
+  const { logout, user, updateSuperAdmin } = useAuth();
   const navigate = useNavigate();
+  // Handler for updating super admin credentials
+  const handleUpdateCredentials = async (e) => {
+    e.preventDefault();
+    setUpdatingCredentials(true);
+    try {
+      const result = await updateSuperAdmin(adminUsername, adminPassword);
+      if (result.success) {
+        toast.success('Credentials updated successfully');
+        setAdminPassword('');
+      } else {
+        toast.error(result.error || 'Failed to update credentials');
+      }
+    } catch (error) {
+      toast.error('Failed to update credentials');
+    } finally {
+      setUpdatingCredentials(false);
+    }
+  };
+
+  // Initialize username from context
+  useEffect(() => {
+    if (user && user.username) {
+      setAdminUsername(user.username);
+    }
+  }, [user]);
 
   useEffect(() => {
     fetchGames();
@@ -87,6 +183,65 @@ const AdminDashboard = () => {
       </header>
 
       <main className={styles['admin-main']}>
+        {/* Platform Links Edit Section */}
+        <section className={styles['platform-links-section']} style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #eee', borderRadius: '8px', maxWidth: '500px' }}>
+          <h2>Edit Social Platform Links</h2>
+          <form onSubmit={handleUpdatePlatformLinks} className={styles['platform-links-form']}>
+            {Object.keys(platformLinks).map(platform => (
+              <div key={platform} style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center' }}>
+                {SOCIAL_LOGOS[platform] && platformLinks[platform] && (
+                  <img src={SOCIAL_LOGOS[platform]} alt={platform} className={styles['social-logo']} style={{ width: 32, height: 32, marginRight: 8 }} />
+                )}
+                <label htmlFor={`platform-link-${platform}`} style={{ minWidth: 90 }}>{platform}:</label>
+                <input
+                  id={`platform-link-${platform}`}
+                  type="url"
+                  value={platformLinks[platform]}
+                  onChange={e => handlePlatformLinksChange(platform, e.target.value)}
+                  placeholder={`Enter ${platform} link`}
+                  style={{ width: '100%', padding: '0.5rem', marginLeft: 8 }}
+                />
+              </div>
+            ))}
+            <button type="submit" disabled={updatingLinks} style={{ padding: '0.5rem 1rem' }}>
+              {updatingLinks ? 'Updating...' : 'Update Platform Links'}
+            </button>
+          </form>
+        </section>
+        {/* Super Admin Credentials Edit Form */}
+        <section className={styles['admin-credentials-section']} style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #eee', borderRadius: '8px', maxWidth: '400px' }}>
+          <h2>Edit Super Admin Credentials</h2>
+          <form onSubmit={handleUpdateCredentials} className={styles['admin-credentials-form']}>
+            <div style={{ marginBottom: '1rem' }}>
+              <label htmlFor="admin-username">Username:</label>
+              <input
+                id="admin-username"
+                type="text"
+                value={adminUsername}
+                onChange={e => setAdminUsername(e.target.value)}
+                required
+                autoComplete="username"
+                style={{ width: '100%', padding: '0.5rem' }}
+              />
+            </div>
+            <div style={{ marginBottom: '1rem' }}>
+              <label htmlFor="admin-password">Password:</label>
+              <input
+                id="admin-password"
+                type="password"
+                value={adminPassword}
+                onChange={e => setAdminPassword(e.target.value)}
+                required
+                autoComplete="new-password"
+                style={{ width: '100%', padding: '0.5rem' }}
+              />
+            </div>
+            <button type="submit" disabled={updatingCredentials} style={{ padding: '0.5rem 1rem' }}>
+              {updatingCredentials ? 'Updating...' : 'Update Credentials'}
+            </button>
+          </form>
+        </section>
+
         <div className={styles['admin-actions']}>
           <h2>Games ({games.length})</h2>
           <Link to="/admin/games/new" className={styles['add-game-btn']}>

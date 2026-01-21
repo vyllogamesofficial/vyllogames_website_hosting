@@ -23,6 +23,7 @@ async function startServer() {
   const gameRoutes = (await import('./routes/games.js')).default;
   const uploadRoutes = (await import('./routes/upload.js')).default;
   const authRoutes = (await import('./routes/auth.js')).default;
+  const platformLinksRoutes = (await import('./routes/platformLinks.js')).default;
 
   const app = express();
   const PORT = process.env.PORT || 5000;
@@ -96,6 +97,7 @@ async function startServer() {
   app.use('/api/auth', authRoutes);
   app.use('/api/games', gameRoutes);
   app.use('/api/upload', uploadRoutes);
+  app.use('/api/platform-links', platformLinksRoutes);
 
   // Health check
   app.get('/api/health', (req, res) => {

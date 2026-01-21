@@ -45,9 +45,16 @@ const HomePage = () => {
       {/* Hero Section */}
       <section className={styles['hero-section']}>
         <div className={styles['hero-content']}>
-          <h1 className={styles['hero-title']}>🎮 Game Park</h1>
+          <h1 className={styles['hero-title']}>VYLLO games</h1>
           <p className={styles['hero-subtitle']}>Magic and dreams in the palm of your hand</p>
           <div className={styles['hero-snow-animation']}></div>
+          {/* About Us Section under the name */}
+          <div className={styles['about-us']} style={{ marginTop: '32px' }}>
+            <h2 className={styles['about-title']}>About Us</h2>
+            <p>Welcome to <strong>VYLLO games</strong>, where games come to life!</p>
+            <p>We’re passionate gamers building a place for players who love to explore, compete, and have fun. From quick casual games to intense challenges, our goal is simple: bring great games together in one easy-to-enjoy platform.</p>
+            <p>We believe gaming is for everyone - no matter your age, skill level, or play style. Jump in, press play, and let the fun begin!</p>
+          </div>
         </div>
       </section>
 

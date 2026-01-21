@@ -1,0 +1,12 @@
+Add SVG or PNG logos for each social platform here:
+- tiktok.svg
+- rednote.svg
+- youtube.svg
+- facebook.svg
+- instagram.svg
+- twitter.svg
+- twitch.svg
+- kick.svg
+- linkedin.svg
+- discord.svg
+- reddit.svg

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import api from '../api';
+import api, { authApi } from '../api';
 
 const AuthContext = createContext(null);
 
@@ -202,12 +202,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
+  // Update super admin credentials
+  const updateSuperAdmin = async (username, password) => {
+    try {
+      const { data } = await authApi.updateSuperAdmin({ username, password });
+      // Update local user state if username changed
+      if (user && user.username !== username) {
+        const updatedUser = { ...user, username };
+        setUser(updatedUser);
+        localStorage.setItem('adminUser', JSON.stringify(updatedUser));
+      }
+      return { success: true, message: data.message };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.error || 'Failed to update credentials' };
+    }
+  };
+
   const value = {
     isAuthenticated,
     user,
     loading,
     login,
     logout: () => logout(false),
+    updateSuperAdmin,
   };
 
   return (

@@ -3,6 +3,19 @@ import { useParams, Link } from 'react-router-dom';
 import { gameApi } from '../../api';
 import styles from './GameDetail.module.css';
 
+// Platform logo mapping
+const PLATFORM_LOGOS = {
+  'Google Play (Android)': '/src/assets/platform-logos/google-play.svg',
+  'App Store (Apple)': '/src/assets/platform-logos/app-store.svg',
+  'Huawei Store': '/src/assets/platform-logos/huawei-store.svg',
+  'Amazon App Store': '/src/assets/platform-logos/amazon-app-store.svg',
+  'PS4/PS5': '/src/assets/platform-logos/ps.svg',
+  'XBOX': '/src/assets/platform-logos/xbox.svg',
+  'Nintendo Switch 1/2': '/src/assets/platform-logos/nintendo-switch.svg',
+  'Steam': '/src/assets/platform-logos/steam.svg',
+  'Epic Store': '/src/assets/platform-logos/epic-store.svg',
+};
+
 // Server URL for static files (remove /api suffix if present)
 const getServerUrl = () => {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -133,7 +146,12 @@ const GameDetail = () => {
                 <span className={styles['info-label']}>Platforms:</span>
                 <div className={styles['platforms-list']}>
                   {game.platforms?.map(platform => (
-                    <span key={platform} className={styles['platform-badge']}>{platform}</span>
+                    <span key={platform} className={styles['platform-badge']}>
+                      {PLATFORM_LOGOS[platform] && (
+                        <img src={PLATFORM_LOGOS[platform]} alt={platform} className={styles['platform-logo']} />
+                      )}
+                      {platform}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -151,24 +169,49 @@ const GameDetail = () => {
             <div className={styles['game-links']}>
               <h3>Download Links</h3>
               <div className={styles['links-grid']}>
-                {game.links?.ios && (
-                  <a href={game.links.ios} target="_blank" rel="noopener noreferrer" className={`${styles['download-link']} ${styles.ios}`}>
-                    📱 App Store
+                {game.links?.googlePlay && (
+                  <a href={game.links.googlePlay} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
+                    <img src={PLATFORM_LOGOS['Google Play (Android)']} alt="Google Play" className={styles['platform-logo']} /> Google Play
                   </a>
                 )}
-                {game.links?.android && (
-                  <a href={game.links.android} target="_blank" rel="noopener noreferrer" className={`${styles['download-link']} ${styles.android}`}>
-                    🤖 Google Play
+                {game.links?.appStore && (
+                  <a href={game.links.appStore} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
+                    <img src={PLATFORM_LOGOS['App Store (Apple)']} alt="App Store" className={styles['platform-logo']} /> App Store
+                  </a>
+                )}
+                {game.links?.huaweiStore && (
+                  <a href={game.links.huaweiStore} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
+                    <img src={PLATFORM_LOGOS['Huawei Store']} alt="Huawei Store" className={styles['platform-logo']} /> Huawei Store
+                  </a>
+                )}
+                {game.links?.amazonAppStore && (
+                  <a href={game.links.amazonAppStore} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
+                    <img src={PLATFORM_LOGOS['Amazon App Store']} alt="Amazon App Store" className={styles['platform-logo']} /> Amazon App Store
+                  </a>
+                )}
+                {game.links?.ps && (
+                  <a href={game.links.ps} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
+                    <img src={PLATFORM_LOGOS['PS4/PS5']} alt="PS4/PS5" className={styles['platform-logo']} /> PS4/PS5
+                  </a>
+                )}
+                {game.links?.xbox && (
+                  <a href={game.links.xbox} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
+                    <img src={PLATFORM_LOGOS['XBOX']} alt="XBOX" className={styles['platform-logo']} /> XBOX
+                  </a>
+                )}
+                {game.links?.nintendoSwitch && (
+                  <a href={game.links.nintendoSwitch} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
+                    <img src={PLATFORM_LOGOS['Nintendo Switch 1/2']} alt="Nintendo Switch" className={styles['platform-logo']} /> Nintendo Switch
                   </a>
                 )}
                 {game.links?.steam && (
-                  <a href={game.links.steam} target="_blank" rel="noopener noreferrer" className={`${styles['download-link']} ${styles.steam}`}>
-                    🎮 Steam
+                  <a href={game.links.steam} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
+                    <img src={PLATFORM_LOGOS['Steam']} alt="Steam" className={styles['platform-logo']} /> Steam
                   </a>
                 )}
-                {game.links?.website && (
-                  <a href={game.links.website} target="_blank" rel="noopener noreferrer" className={`${styles['download-link']} ${styles.website}`}>
-                    🌐 Website
+                {game.links?.epicStore && (
+                  <a href={game.links.epicStore} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
+                    <img src={PLATFORM_LOGOS['Epic Store']} alt="Epic Store" className={styles['platform-logo']} /> Epic Store
                   </a>
                 )}
               </div>

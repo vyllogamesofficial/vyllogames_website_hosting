@@ -12,7 +12,17 @@ const getServerUrl = () => {
 const SERVER_URL = getServerUrl();
 
 const CATEGORIES = ['Simulation', 'RPG', 'Strategy', 'Action', 'Puzzle', 'Adventure', 'Sports', 'Other'];
-const PLATFORMS = ['iOS', 'Android', 'Steam', 'Switch', 'PS4', 'PS5', 'Xbox', 'PC'];
+const PLATFORMS = [
+  'Google Play (Android)',
+  'App Store (Apple)',
+  'Huawei Store',
+  'Amazon App Store',
+  'PS4/PS5',
+  'XBOX',
+  'Nintendo Switch 1/2',
+  'Steam',
+  'Epic Store'
+];
 
 const GameForm = () => {
   const { id } = useParams();
@@ -30,10 +40,15 @@ const GameForm = () => {
     category: 'Simulation',
     platforms: [],
     links: {
-      ios: '',
-      android: '',
+      googlePlay: '',
+      appStore: '',
+      huaweiStore: '',
+      amazonAppStore: '',
+      ps: '',
+      xbox: '',
+      nintendoSwitch: '',
       steam: '',
-      website: ''
+      epicStore: ''
     },
     trailerUrl: '',
     featured: false,
@@ -265,29 +280,82 @@ const GameForm = () => {
             <h3>Download Links</h3>
             
             <div className={styles['form-group']}>
-              <label htmlFor="links.ios">App Store URL</label>
+              <label htmlFor="links.googlePlay">Google Play (Android) URL</label>
               <input
                 type="url"
-                id="links.ios"
-                name="links.ios"
-                value={formData.links.ios}
-                onChange={handleChange}
-                placeholder="https://apps.apple.com/..."
-              />
-            </div>
-
-            <div className={styles['form-group']}>
-              <label htmlFor="links.android">Google Play URL</label>
-              <input
-                type="url"
-                id="links.android"
-                name="links.android"
-                value={formData.links.android}
+                id="links.googlePlay"
+                name="links.googlePlay"
+                value={formData.links.googlePlay}
                 onChange={handleChange}
                 placeholder="https://play.google.com/..."
               />
             </div>
-
+            <div className={styles['form-group']}>
+              <label htmlFor="links.appStore">App Store (Apple) URL</label>
+              <input
+                type="url"
+                id="links.appStore"
+                name="links.appStore"
+                value={formData.links.appStore}
+                onChange={handleChange}
+                placeholder="https://apps.apple.com/..."
+              />
+            </div>
+            <div className={styles['form-group']}>
+              <label htmlFor="links.huaweiStore">Huawei Store URL</label>
+              <input
+                type="url"
+                id="links.huaweiStore"
+                name="links.huaweiStore"
+                value={formData.links.huaweiStore}
+                onChange={handleChange}
+                placeholder="https://appgallery.huawei.com/..."
+              />
+            </div>
+            <div className={styles['form-group']}>
+              <label htmlFor="links.amazonAppStore">Amazon App Store URL</label>
+              <input
+                type="url"
+                id="links.amazonAppStore"
+                name="links.amazonAppStore"
+                value={formData.links.amazonAppStore}
+                onChange={handleChange}
+                placeholder="https://www.amazon.com/gp/mas/..."
+              />
+            </div>
+            <div className={styles['form-group']}>
+              <label htmlFor="links.ps">PS4/PS5 URL</label>
+              <input
+                type="url"
+                id="links.ps"
+                name="links.ps"
+                value={formData.links.ps}
+                onChange={handleChange}
+                placeholder="https://store.playstation.com/..."
+              />
+            </div>
+            <div className={styles['form-group']}>
+              <label htmlFor="links.xbox">XBOX URL</label>
+              <input
+                type="url"
+                id="links.xbox"
+                name="links.xbox"
+                value={formData.links.xbox}
+                onChange={handleChange}
+                placeholder="https://www.xbox.com/..."
+              />
+            </div>
+            <div className={styles['form-group']}>
+              <label htmlFor="links.nintendoSwitch">Nintendo Switch 1/2 URL</label>
+              <input
+                type="url"
+                id="links.nintendoSwitch"
+                name="links.nintendoSwitch"
+                value={formData.links.nintendoSwitch}
+                onChange={handleChange}
+                placeholder="https://www.nintendo.com/..."
+              />
+            </div>
             <div className={styles['form-group']}>
               <label htmlFor="links.steam">Steam URL</label>
               <input
@@ -299,16 +367,15 @@ const GameForm = () => {
                 placeholder="https://store.steampowered.com/..."
               />
             </div>
-
             <div className={styles['form-group']}>
-              <label htmlFor="links.website">Website URL</label>
+              <label htmlFor="links.epicStore">Epic Store URL</label>
               <input
                 type="url"
-                id="links.website"
-                name="links.website"
-                value={formData.links.website}
+                id="links.epicStore"
+                name="links.epicStore"
+                value={formData.links.epicStore}
                 onChange={handleChange}
-                placeholder="https://..."
+                placeholder="https://www.epicgames.com/..."
               />
             </div>
           </div>

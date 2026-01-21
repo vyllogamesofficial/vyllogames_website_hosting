@@ -117,6 +117,31 @@ const validateLogin = [
 
 // ============ ROUTES ============
 
+// @route   POST /api/auth/update-super-admin
+// @desc    Update super admin username and password
+// @access  Private
+router.post('/update-super-admin', protect, [
+  body('username').trim().notEmpty().withMessage('Username is required'),
+  body('password').notEmpty().withMessage('Password is required')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: 'Invalid input', details: errors.array() });
+    }
+    const { username, password } = req.body;
+    // Hash the password before storing
+    const hashedPassword = await bcrypt.hash(password, 10);
+    SUPER_ADMIN.username = username;
+    SUPER_ADMIN.password = hashedPassword;
+    console.log('🔑 Super Admin credentials updated:', { username });
+    res.json({ message: 'Super admin credentials updated successfully', username });
+  } catch (error) {
+    console.error('Update super admin error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // @route   POST /api/auth/login
 // @desc    Super Admin login
 // @access  Public
@@ -156,13 +181,11 @@ router.post('/login', validateLogin, async (req, res) => {
       });
     }
 
-    // Verify password (plain text comparison)
-    const isMatch = password === SUPER_ADMIN.password;
-    
+    // Verify password (bcrypt comparison)
+    const isMatch = await bcrypt.compare(password, SUPER_ADMIN.password);
     if (!isMatch) {
       incrementLoginAttempts();
       const attemptsLeft = MAX_LOGIN_ATTEMPTS - securityStore.loginAttempts;
-      
       return res.status(401).json({
         error: 'Invalid credentials',
         attemptsRemaining: Math.max(0, attemptsLeft),

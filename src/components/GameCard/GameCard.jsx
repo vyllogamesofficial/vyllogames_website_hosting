@@ -1,6 +1,19 @@
 import { Link } from 'react-router-dom';
 import styles from './GameCard.module.css';
 
+// Platform logo mapping
+const PLATFORM_LOGOS = {
+  'Google Play (Android)': '/src/assets/platform-logos/google-play.svg',
+  'App Store (Apple)': '/src/assets/platform-logos/app-store.svg',
+  'Huawei Store': '/src/assets/platform-logos/huawei-store.svg',
+  'Amazon App Store': '/src/assets/platform-logos/amazon-app-store.svg',
+  'PS4/PS5': '/src/assets/platform-logos/ps.svg',
+  'XBOX': '/src/assets/platform-logos/xbox.svg',
+  'Nintendo Switch 1/2': '/src/assets/platform-logos/nintendo-switch.svg',
+  'Steam': '/src/assets/platform-logos/steam.svg',
+  'Epic Store': '/src/assets/platform-logos/epic-store.svg',
+};
+
 // Server URL for static files (remove /api suffix if present)
 const getServerUrl = () => {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -38,6 +51,9 @@ const GameCard = ({ game, featured = false }) => {
             <div className={styles['game-platforms']}>
               {game.platforms?.map(platform => (
                 <span key={platform} className={styles['platform-badge']}>
+                  {PLATFORM_LOGOS[platform] && (
+                    <img src={PLATFORM_LOGOS[platform]} alt={platform} className={styles['platform-logo']} />
+                  )}
                   {platform}
                 </span>
               ))}
