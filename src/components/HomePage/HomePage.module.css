@@ -89,6 +89,11 @@
   display: block;
 }
 
+/* Nudge the hero logo slightly down to align with the title */
+.hero-logo {
+  transform: translateY(-10px);
+}
+
 .hero-title {
   font-family: 'Press Start 2P', cursive;
   font-size: 2.2rem;
@@ -439,6 +444,11 @@
   display: inline-block;
 }
 
+/* Nudge the small footer logo up for better baseline alignment */
+.footer-logo {
+  transform: translateY(-1px);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .home-page {
@@ -449,6 +459,16 @@
   
   .hero-title {
     font-size: 1.2rem;
+  }
+
+  .hero-logo {
+    width: 64px;
+    transform: translateY(4px);
+  }
+
+  .footer-logo {
+    width: 18px;
+    transform: translateY(-3px);
   }
   
   .hero-subtitle {
