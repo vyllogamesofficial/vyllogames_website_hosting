@@ -28,7 +28,8 @@ const getSuperAdmin = async () => {
   return superAdmin;
 };
 
-// ============ IN-MEMORY SECURITY STORE ============
+// ============ SECURITY STORE (persisted to DB) ============
+// We keep a small in-memory cache but persist authoritative state to the SuperAdmin document.
 const securityStore = {
   loginAttempts: 0,
   lockUntil: null,
@@ -41,43 +42,60 @@ const securityStore = {
 // Increased session durations for local/admin convenience
 const ACCESS_TOKEN_EXPIRY = '30m'; // access token lifetime
 const REFRESH_TOKEN_EXPIRY = '7d'; // refresh token lifetime
-const SESSION_TIMEOUT = 7 * 24 * 60 * 60 * 1000; // 7 days inactivity
+// SESSION_TIMEOUT controls inactivity logout. Set to 0 to disable inactivity timeout.
+const SESSION_TIMEOUT = 0; // 0 = disabled (previously 7 days)
 const MAX_LOGIN_ATTEMPTS = 3;
 
 // ============ LOCKOUT FUNCTIONS ============
-const incrementLoginAttempts = () => {
-  securityStore.loginAttempts += 1;
+const incrementLoginAttempts = async () => {
+  const superAdmin = await getSuperAdmin();
+  superAdmin.loginAttempts = (superAdmin.loginAttempts || 0) + 1;
 
   // Dynamic lock times
   let lockTime = 0;
-  if (securityStore.loginAttempts <= 3) {
+  if (superAdmin.loginAttempts <= 3) {
     lockTime = 30 * 1000; // 30s
-  } else if (securityStore.loginAttempts <= 6) {
+  } else if (superAdmin.loginAttempts <= 6) {
     lockTime = 2 * 60 * 1000; // 2min
   } else {
     lockTime = 10 * 60 * 1000; // 10min
   }
 
-  securityStore.lockUntil = Date.now() + lockTime;
+  superAdmin.lockUntil = Date.now() + lockTime;
+  await superAdmin.save();
+
+  // update cache
+  securityStore.loginAttempts = superAdmin.loginAttempts;
+  securityStore.lockUntil = superAdmin.lockUntil;
 };
 
-const isLocked = () => {
-  if (securityStore.lockUntil && securityStore.lockUntil > Date.now()) {
+const isLocked = async () => {
+  const superAdmin = await getSuperAdmin();
+  if (superAdmin.lockUntil && superAdmin.lockUntil > Date.now()) {
     return true;
   }
-  if (securityStore.lockUntil && securityStore.lockUntil <= Date.now()) {
+  if (superAdmin.lockUntil && superAdmin.lockUntil <= Date.now()) {
+    superAdmin.lockUntil = null;
+    superAdmin.loginAttempts = 0;
+    await superAdmin.save();
+
     securityStore.lockUntil = null;
     securityStore.loginAttempts = 0;
   }
   return false;
 };
 
-const getLockTimeRemaining = () => {
-  if (!securityStore.lockUntil) return 0;
-  return Math.ceil((securityStore.lockUntil - Date.now()) / 1000); // seconds
+const getLockTimeRemaining = async () => {
+  const superAdmin = await getSuperAdmin();
+  if (!superAdmin.lockUntil) return 0;
+  return Math.ceil((superAdmin.lockUntil - Date.now()) / 1000); // seconds
 };
 
-const resetLoginAttempts = () => {
+const resetLoginAttempts = async () => {
+  const superAdmin = await getSuperAdmin();
+  superAdmin.loginAttempts = 0;
+  superAdmin.lockUntil = null;
+  await superAdmin.save();
   securityStore.loginAttempts = 0;
   securityStore.lockUntil = null;
 };
@@ -85,7 +103,7 @@ const resetLoginAttempts = () => {
 // ============ SESSION/TOKEN FUNCTIONS ============
 const generateSessionId = () => crypto.randomBytes(32).toString('hex');
 
-const generateTokens = (superAdmin, sessionId) => {
+const generateTokens = async (superAdmin, sessionId) => {
   const accessToken = jwt.sign(
     { id: SUPER_ADMIN_ID, email: superAdmin.email, sessionId, type: 'access' },
     process.env.JWT_SECRET || 'your-secret-key',
@@ -98,8 +116,16 @@ const generateTokens = (superAdmin, sessionId) => {
     { expiresIn: REFRESH_TOKEN_EXPIRY }
   );
 
+  // Persist tokens/session info to DB
+  superAdmin.refreshToken = refreshToken;
+  superAdmin.sessionId = sessionId;
+  superAdmin.lastActivity = Date.now();
+  await superAdmin.save();
+
+  // update cache
   securityStore.refreshToken = refreshToken;
-  securityStore.lastActivity = Date.now();
+  securityStore.lastActivity = superAdmin.lastActivity;
+  securityStore.sessionId = sessionId;
 
   return { accessToken, refreshToken };
 };
@@ -168,22 +194,23 @@ router.post('/login', validateLogin, async (req, res) => {
 
     console.log('Login attempt:', { email: email, passwordPreview: mask(password) });
 
-    if (isLocked()) {
+    if (await isLocked()) {
       return res.status(423).json({
-        error: `Account locked. Try again in ${getLockTimeRemaining()} seconds.`,
+        error: `Account locked. Try again in ${await getLockTimeRemaining()} seconds.`,
         locked: true,
-        lockTimeRemaining: getLockTimeRemaining()
+        lockTimeRemaining: await getLockTimeRemaining()
       });
     }
 
     const superAdmin = await SuperAdmin.findOne({ email: email.toLowerCase() });
     if (!superAdmin) {
-      incrementLoginAttempts();
+      await incrementLoginAttempts();
+      const attemptsRemaining = Math.max(0, MAX_LOGIN_ATTEMPTS - (securityStore.loginAttempts || 0));
       return res.status(401).json({
         error: 'Invalid credentials',
-        attemptsRemaining: Math.max(0, MAX_LOGIN_ATTEMPTS - securityStore.loginAttempts),
-        locked: isLocked(),
-        lockTimeRemaining: getLockTimeRemaining()
+        attemptsRemaining,
+        locked: await isLocked(),
+        lockTimeRemaining: await getLockTimeRemaining()
       });
     }
 
@@ -206,21 +233,21 @@ router.post('/login', validateLogin, async (req, res) => {
     }
 
     if (!passwordMatch) {
-      incrementLoginAttempts();
+      await incrementLoginAttempts();
+      const attemptsRemaining = Math.max(0, MAX_LOGIN_ATTEMPTS - (securityStore.loginAttempts || 0));
       return res.status(401).json({
         error: 'Invalid credentials',
-        attemptsRemaining: Math.max(0, MAX_LOGIN_ATTEMPTS - securityStore.loginAttempts),
-        locked: isLocked(),
-        lockTimeRemaining: getLockTimeRemaining()
+        attemptsRemaining,
+        locked: await isLocked(),
+        lockTimeRemaining: await getLockTimeRemaining()
       });
     }
 
     // Successful login
-    resetLoginAttempts();
+    await resetLoginAttempts();
     const sessionId = generateSessionId();
-    securityStore.sessionId = sessionId;
 
-    const { accessToken, refreshToken } = generateTokens(superAdmin, sessionId);
+    const { accessToken, refreshToken } = await generateTokens(superAdmin, sessionId);
 
     console.log(`✅ Super Admin logged in at ${new Date().toISOString()} from IP: ${req.ip}`);
 
@@ -240,74 +267,107 @@ router.post('/refresh', async (req, res) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) return res.status(401).json({ error: 'Refresh token required' });
-
-    if (refreshToken !== securityStore.refreshToken) {
-      securityStore.refreshToken = null;
-      securityStore.sessionId = null;
+    const superAdmin = await getSuperAdmin();
+    if (refreshToken !== superAdmin.refreshToken) {
+      superAdmin.refreshToken = null;
+      superAdmin.sessionId = null;
+      await superAdmin.save();
       console.warn('⚠️ Invalid refresh token - session invalidated');
       return res.status(401).json({ error: 'Invalid refresh token. Please login again.' });
     }
 
-    if (securityStore.lastActivity && Date.now() - securityStore.lastActivity > SESSION_TIMEOUT) {
-      securityStore.refreshToken = null;
-      securityStore.sessionId = null;
+    if (SESSION_TIMEOUT > 0 && superAdmin.lastActivity && Date.now() - superAdmin.lastActivity > SESSION_TIMEOUT) {
+      superAdmin.refreshToken = null;
+      superAdmin.sessionId = null;
+      await superAdmin.save();
       return res.status(401).json({ error: 'Session expired due to inactivity' });
     }
 
     const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET || 'your-secret-key');
 
-    if (decoded.type !== 'refresh' || decoded.sessionId !== securityStore.sessionId) {
+    if (decoded.type !== 'refresh' || decoded.sessionId !== superAdmin.sessionId) {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
-    const superAdmin = await getSuperAdmin();
-    const tokens = generateTokens(superAdmin, securityStore.sessionId);
+    const tokens = await generateTokens(superAdmin, superAdmin.sessionId);
 
     res.json({ token: tokens.accessToken, refreshToken: tokens.refreshToken });
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
-      securityStore.refreshToken = null;
-      securityStore.sessionId = null;
+      const superAdmin = await getSuperAdmin();
+      superAdmin.refreshToken = null;
+      superAdmin.sessionId = null;
+      await superAdmin.save();
       return res.status(401).json({ error: 'Session expired. Please login again.' });
     }
     console.error('Refresh error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
-
 // Logout
-router.post('/logout', (req, res) => {
-  securityStore.refreshToken = null;
-  securityStore.sessionId = null;
-  securityStore.lastActivity = null;
-  console.log(`🚪 Super Admin logged out at ${new Date().toISOString()}`);
-  res.json({ message: 'Logged out successfully' });
+router.post('/logout', async (req, res) => {
+  try {
+    const superAdmin = await getSuperAdmin();
+    superAdmin.refreshToken = null;
+    superAdmin.sessionId = null;
+    superAdmin.lastActivity = null;
+    await superAdmin.save();
+    securityStore.refreshToken = null;
+    securityStore.sessionId = null;
+    securityStore.lastActivity = null;
+    console.log(`🚪 Super Admin logged out at ${new Date().toISOString()}`);
+    res.json({ message: 'Logged out successfully' });
+  } catch (err) {
+    console.error('Logout error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // Verify token
-router.get('/verify', protect, (req, res) => {
-  securityStore.lastActivity = Date.now();
-  res.json({ valid: true, user: req.user });
+router.get('/verify', protect, async (req, res) => {
+  try {
+    const superAdmin = await getSuperAdmin();
+    superAdmin.lastActivity = Date.now();
+    await superAdmin.save();
+    securityStore.lastActivity = superAdmin.lastActivity;
+    res.json({ valid: true, user: req.user });
+  } catch (err) {
+    console.error('Verify error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // Get current admin info
 router.get('/me', protect, async (req, res) => {
-  securityStore.lastActivity = Date.now();
-  const superAdmin = await getSuperAdmin();
-  res.json({
-    user: { id: SUPER_ADMIN_ID, username: superAdmin.username, email: superAdmin.email, role: 'super-admin' }
-  });
+  try {
+    const superAdmin = await getSuperAdmin();
+    superAdmin.lastActivity = Date.now();
+    await superAdmin.save();
+    securityStore.lastActivity = superAdmin.lastActivity;
+    res.json({
+      user: { id: SUPER_ADMIN_ID, username: superAdmin.username, email: superAdmin.email, role: 'super-admin' }
+    });
+  } catch (err) {
+    console.error('Me error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // Status (debug)
-router.get('/status', (req, res) => {
-  res.json({
-    locked: isLocked(),
-    attemptsRemaining: Math.max(0, MAX_LOGIN_ATTEMPTS - securityStore.loginAttempts),
-    lockTimeRemaining: getLockTimeRemaining(),
-    hasActiveSession: !!securityStore.sessionId,
-    lastActivity: securityStore.lastActivity || null
-  });
+router.get('/status', async (req, res) => {
+  try {
+    const superAdmin = await getSuperAdmin();
+    res.json({
+      locked: await isLocked(),
+      attemptsRemaining: Math.max(0, MAX_LOGIN_ATTEMPTS - (superAdmin.loginAttempts || 0)),
+      lockTimeRemaining: await getLockTimeRemaining(),
+      hasActiveSession: !!superAdmin.sessionId,
+      lastActivity: superAdmin.lastActivity || null
+    });
+  } catch (err) {
+    console.error('Status error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 export default router;

@@ -98,9 +98,41 @@ async function startServer() {
 
   // ============ DATABASE ============
 
-  mongoose.connect(process.env.MONGODB_URI)
+  // Connect to MongoDB with sensible options and add connection event listeners
+  const mongooseOptions = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 30000 // 30s
+  };
+
+  mongoose.connect(process.env.MONGODB_URI, mongooseOptions)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch((err) => console.error('❌ MongoDB connection error:', err));
+
+  mongoose.connection.on('error', (err) => {
+    console.error('MongoDB connection error (event):', err);
+  });
+
+  mongoose.connection.on('disconnected', () => {
+    console.warn('MongoDB disconnected - will attempt to reconnect periodically');
+  });
+
+  mongoose.connection.on('reconnected', () => {
+    console.log('MongoDB reconnected');
+  });
+
+  // Periodically ensure connection (helps recover from transient network blips)
+  const ensureConnection = async () => {
+    if (mongoose.connection.readyState !== 1) {
+      try {
+        await mongoose.connect(process.env.MONGODB_URI, mongooseOptions);
+        console.log('✅ Reconnected to MongoDB (ensureConnection)');
+      } catch (err) {
+        console.error('Reconnection attempt failed:', err && err.message ? err.message : err);
+      }
+    }
+  };
+  setInterval(ensureConnection, 30 * 1000); // try every 30s
 
   // ============ ROUTES ============
 
