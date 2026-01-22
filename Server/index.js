@@ -55,15 +55,30 @@ async function startServer() {
     skipSuccessfulRequests: true, // Don't count successful logins
   });
 
-  // CORS configuration
+  // CORS configuration: allow production FRONTEND_URL plus common localhost origins
+  const prodFrontend = process.env.FRONTEND_URL;
+  const localOrigins = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+  ];
+  const whitelist = new Set(localOrigins.concat(prodFrontend ? [prodFrontend] : []));
+
   const corsOptions = {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      // allow non-browser tools like curl/postman (no origin)
+      if (!origin) return callback(null, true);
+      if (whitelist.has(origin)) return callback(null, true);
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     optionsSuccessStatus: 200,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   };
   app.use(cors(corsOptions));
+  console.log('CORS whitelist:', Array.from(whitelist));
 
   // Body parser with size limit
   app.use(express.json({ limit: '10kb' })); // Limit body size to prevent DoS

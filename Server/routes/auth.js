@@ -197,7 +197,7 @@ router.post('/login', validateLogin, async (req, res) => {
       user: { id: superAdmin._id, username: superAdmin.username, email: superAdmin.email, role: 'super-admin' }
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Login error:', error.stack || error);
     res.status(500).json({ error: 'Server error' });
   }
 });
