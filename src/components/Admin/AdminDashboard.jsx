@@ -82,7 +82,7 @@ const AdminDashboard = () => {
       }
     };
   const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Removed loading state
   const [adminUsername, setAdminUsername] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [updatingCredentials, setUpdatingCredentials] = useState(false);
@@ -124,8 +124,6 @@ const AdminDashboard = () => {
       setGames(data);
     } catch (error) {
       toast.error('Failed to fetch games');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -158,14 +156,7 @@ const AdminDashboard = () => {
     navigate('/admin/login');
   };
 
-  if (loading) {
-    return (
-      <div className={styles['loading-container']}>
-        <div className={styles['loading-spinner']}></div>
-        <p>Loading dashboard...</p>
-      </div>
-    );
-  }
+  // Removed loading screen
 
   return (
     <div className={styles['admin-dashboard']}>

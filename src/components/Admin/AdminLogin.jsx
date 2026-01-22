@@ -9,7 +9,7 @@ const AdminLogin = () => {
     email: '',
     password: '',
   });
-  const [loading, setLoading] = useState(false);
+  // Removed loading state
   const [showPassword, setShowPassword] = useState(false);
   const [lockInfo, setLockInfo] = useState(null);
   const { login } = useAuth();
@@ -26,13 +26,11 @@ const AdminLogin = () => {
 
     if (!formData.email || !formData.password) {
       toast.error('Please fill in all fields');
-      setLoading(false);
       return;
     }
 
     try {
       const result = await login(formData.email, formData.password);
-      
       if (result.success) {
         toast.success('Access granted!');
         navigate('/admin/dashboard');
@@ -55,8 +53,6 @@ const AdminLogin = () => {
     } catch {
       toast.error('Connection error');
     }
-    
-    setLoading(false);
   };
 
   return (
@@ -120,9 +116,9 @@ const AdminLogin = () => {
             <button 
               type="submit" 
               className={styles['login-btn']} 
-              disabled={loading || lockInfo?.locked}
+              disabled={lockInfo?.locked}
             >
-              {loading ? '⏳ Verifying...' : '🔓 Access Dashboard'}
+              🔓 Access Dashboard
             </button>
           </form>
 

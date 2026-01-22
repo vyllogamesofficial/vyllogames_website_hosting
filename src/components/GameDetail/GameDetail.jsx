@@ -26,7 +26,7 @@ const SERVER_URL = getServerUrl();
 const GameDetail = () => {
   const { id } = useParams();
   const [game, setGame] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Removed loading state
 
   // Convert YouTube URL to embed URL
   const getYouTubeEmbedUrl = (url) => {
@@ -67,22 +67,12 @@ const GameDetail = () => {
         setGame(data);
       } catch (error) {
         console.error('Error fetching game:', error);
-      } finally {
-        setLoading(false);
       }
     };
-
     fetchGame();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className={styles['loading-container']}>
-        <div className={styles['loading-spinner']}></div>
-        <p>Loading game details...</p>
-      </div>
-    );
-  }
+  // Removed loading screen
 
   if (!game) {
     return (

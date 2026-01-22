@@ -8,7 +8,7 @@ const HomePage = () => {
   const [featuredGames, setFeaturedGames] = useState([]);
   const [newGames, setNewGames] = useState([]);
   const [allGames, setAllGames] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Removed loading state
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -23,22 +23,12 @@ const HomePage = () => {
         setAllGames(allRes.data);
       } catch (error) {
         console.error('Error fetching games:', error);
-      } finally {
-        setLoading(false);
       }
     };
-
     fetchGames();
   }, []);
 
-  if (loading) {
-    return (
-      <div className={styles['loading-container']}>
-        <div className={styles['loading-spinner']}></div>
-        <p>Loading games...</p>
-      </div>
-    );
-  }
+  // Removed loading screen
 
   return (
     <div className={styles['home-page']}>
