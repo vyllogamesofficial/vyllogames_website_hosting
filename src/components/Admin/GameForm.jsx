@@ -29,7 +29,7 @@ const GameForm = () => {
   const navigate = useNavigate();
   const isEditing = Boolean(id);
   
-  // Removed loading state
+  const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -65,6 +65,7 @@ const GameForm = () => {
 
   const fetchGame = async () => {
     try {
+      setLoading(true);
       const { data } = await gameApi.getById(id);
       setFormData({
         ...data,
@@ -74,6 +75,8 @@ const GameForm = () => {
     } catch (error) {
       toast.error('Failed to fetch game');
       navigate('/admin/dashboard');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -131,6 +134,7 @@ const GameForm = () => {
     }
 
     try {
+      setLoading(true);
       if (isEditing) {
         await gameApi.update(id, formData);
         toast.success('Game updated successfully');
@@ -141,10 +145,12 @@ const GameForm = () => {
       navigate('/admin/dashboard');
     } catch (error) {
       toast.error(error.response?.data?.error || 'Failed to save game');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Removed loading screen
+  // Loading handled for fetch/save
 
   return (
     <div className={styles['game-form-page']}>
