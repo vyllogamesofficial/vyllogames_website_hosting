@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { body, validationResult } from 'express-validator';
 import { protect } from '../middleware/auth.js';
+import SuperAdmin from '../models/SuperAdmin.js';
 
 const router = express.Router();
 
@@ -122,6 +123,7 @@ const validateLogin = [
 // @access  Private
 router.post('/update-super-admin', protect, [
   body('username').trim().notEmpty().withMessage('Username is required'),
+  body('email').isEmail().withMessage('Valid email is required'),
   body('password').notEmpty().withMessage('Password is required')
 ], async (req, res) => {
   try {
@@ -129,13 +131,21 @@ router.post('/update-super-admin', protect, [
     if (!errors.isEmpty()) {
       return res.status(400).json({ error: 'Invalid input', details: errors.array() });
     }
-    const { username, password } = req.body;
-    // Hash the password before storing
+    const { username, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    SUPER_ADMIN.username = username;
-    SUPER_ADMIN.password = hashedPassword;
-    console.log('🔑 Super Admin credentials updated:', { username });
-    res.json({ message: 'Super admin credentials updated successfully', username });
+    // Find the super admin (assume only one exists)
+    let superAdmin = await SuperAdmin.findOne();
+    if (!superAdmin) {
+      // If not found, create it
+      superAdmin = new SuperAdmin({ username, email, password: hashedPassword });
+    } else {
+      superAdmin.username = username;
+      superAdmin.email = email;
+      superAdmin.password = hashedPassword;
+    }
+    await superAdmin.save();
+    console.log('🔑 Super Admin credentials updated:', { username, email });
+    res.json({ message: 'Super admin credentials updated successfully', username, email });
   } catch (error) {
     console.error('Update super admin error:', error);
     res.status(500).json({ error: 'Server error' });
@@ -295,13 +305,14 @@ router.get('/verify', protect, (req, res) => {
 // @route   GET /api/auth/me
 // @desc    Get current admin info
 // @access  Private
-router.get('/me', protect, (req, res) => {
+router.get('/me', protect, async (req, res) => {
   securityStore.lastActivity = Date.now();
+  const superAdmin = await getSuperAdmin();
   res.json({
     user: {
-      id: SUPER_ADMIN.id,
-      username: SUPER_ADMIN.username,
-      email: SUPER_ADMIN.email,
+      id: SUPER_ADMIN_ID,
+      username: superAdmin.username,
+      email: superAdmin.email,
       role: 'super-admin'
     }
   });

@@ -204,12 +204,12 @@ export const AuthProvider = ({ children }) => {
 
 
   // Update super admin credentials
-  const updateSuperAdmin = async (username, password) => {
+  const updateSuperAdmin = async (username, email, password) => {
     try {
-      const { data } = await authApi.updateSuperAdmin({ username, password });
-      // Update local user state if username changed
-      if (user && user.username !== username) {
-        const updatedUser = { ...user, username };
+      const { data } = await authApi.updateSuperAdmin({ username, email, password });
+      // Update local user state if username or email changed
+      if (user && (user.username !== username || user.email !== email)) {
+        const updatedUser = { ...user, username, email };
         setUser(updatedUser);
         localStorage.setItem('adminUser', JSON.stringify(updatedUser));
       }

@@ -84,6 +84,7 @@ const AdminDashboard = () => {
   const [games, setGames] = useState([]);
   // Removed loading state
   const [adminUsername, setAdminUsername] = useState('');
+  const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [updatingCredentials, setUpdatingCredentials] = useState(false);
   const { logout, user, updateSuperAdmin } = useAuth();
@@ -93,7 +94,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     setUpdatingCredentials(true);
     try {
-      const result = await updateSuperAdmin(adminUsername, adminPassword);
+      const result = await updateSuperAdmin(adminUsername, adminEmail, adminPassword);
       if (result.success) {
         toast.success('Credentials updated successfully');
         setAdminPassword('');
@@ -107,10 +108,13 @@ const AdminDashboard = () => {
     }
   };
 
-  // Initialize username from context
+  // Initialize username/email from context
   useEffect(() => {
     if (user && user.username) {
       setAdminUsername(user.username);
+    }
+    if (user && user.email) {
+      setAdminEmail(user.email);
     }
   }, [user]);
 
@@ -212,6 +216,18 @@ const AdminDashboard = () => {
                 onChange={e => setAdminUsername(e.target.value)}
                 required
                 autoComplete="username"
+                style={{ width: '100%', padding: '0.5rem' }}
+              />
+            </div>
+            <div style={{ marginBottom: '1rem' }}>
+              <label htmlFor="admin-email">Email:</label>
+              <input
+                id="admin-email"
+                type="email"
+                value={adminEmail}
+                onChange={e => setAdminEmail(e.target.value)}
+                required
+                autoComplete="email"
                 style={{ width: '100%', padding: '0.5rem' }}
               />
             </div>
