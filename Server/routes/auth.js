@@ -33,9 +33,10 @@ const securityStore = {
 };
 
 // ============ SECURITY CONSTANTS ============
-const ACCESS_TOKEN_EXPIRY = '10m';
-const REFRESH_TOKEN_EXPIRY = '1h';
-const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutes inactivity
+// Increased session durations for local/admin convenience
+const ACCESS_TOKEN_EXPIRY = '30m'; // access token lifetime
+const REFRESH_TOKEN_EXPIRY = '7d'; // refresh token lifetime
+const SESSION_TIMEOUT = 7 * 24 * 60 * 60 * 1000; // 7 days inactivity
 
 // NOTE: Lockout/login-attempts removed by request — keep session/refresh token handling only
 
@@ -114,12 +115,25 @@ router.post('/login', validateLogin, async (req, res) => {
 
     const { email, password } = req.body;
 
+      // Debug helper - mask passwords for logs
+      const mask = (s) => {
+        if (!s) return '';
+        if (s.length <= 2) return '*'.repeat(s.length);
+        return `${s[0]}${'*'.repeat(Math.max(0, s.length - 2))}${s.slice(-1)}`;
+      };
+
+      console.log('Login attempt:', { email: email, passwordPreview: mask(password) });
+
     const superAdmin = await SuperAdmin.findOne({ email: email.toLowerCase() });
     if (!superAdmin) {
+      console.warn('Login failed: no super admin found for email', email.toLowerCase());
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    console.log('Found superAdmin:', { dbEmail: superAdmin.email, dbPasswordPreview: mask(superAdmin.password) });
+
     if (password !== superAdmin.password) {
+      console.warn('Login failed: password mismatch for', email.toLowerCase());
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     const sessionId = generateSessionId();

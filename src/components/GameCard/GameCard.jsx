@@ -51,13 +51,13 @@ const GameCard = ({ game, featured = false }) => {
             <div className={styles['game-platforms']}>
               {game.platforms?.map(platform => (
                 <span key={platform} className={styles['platform-badge']}>
-                  {PLATFORM_LOGOS[platform] && (
-                    <img src={PLATFORM_LOGOS[platform]} alt={platform} className={styles['platform-logo']} />
-                  )}
                   {platform}
                 </span>
               ))}
             </div>
+            {game.releaseDate && (
+              <div className={styles['release-date']}>{new Date(game.releaseDate).toLocaleDateString()}</div>
+            )}
           </div>
         </div>
       </Link>

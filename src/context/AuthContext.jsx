@@ -3,9 +3,9 @@ import api, { authApi } from '../api';
 
 const AuthContext = createContext(null);
 
-// Security constants
-const INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 minutes
-const TOKEN_REFRESH_INTERVAL = 13 * 60 * 1000; // Refresh 2 mins before expiry
+// Security constants (extended for longer admin sessions)
+const INACTIVITY_TIMEOUT = 7 * 24 * 60 * 60 * 1000; // 7 days
+const TOKEN_REFRESH_INTERVAL = 25 * 60 * 1000; // Refresh every 25 minutes (before 30m access expiry)
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

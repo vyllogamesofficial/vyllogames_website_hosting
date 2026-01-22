@@ -53,6 +53,7 @@ const GameForm = () => {
     trailerUrl: '',
     featured: false,
     isNewRelease: true,
+    releaseDate: '',
     isActive: true,
     order: 0
   });
@@ -70,7 +71,8 @@ const GameForm = () => {
       setFormData({
         ...data,
         links: data.links || { ios: '', android: '', steam: '', website: '' },
-        trailerUrl: data.trailerUrl || ''
+        trailerUrl: data.trailerUrl || '',
+        releaseDate: data.releaseDate ? new Date(data.releaseDate).toISOString().slice(0,10) : ''
       });
     } catch (error) {
       toast.error('Failed to fetch game');
@@ -135,11 +137,15 @@ const GameForm = () => {
 
     try {
       setLoading(true);
+      const payload = { ...formData };
+      // If releaseDate is empty string, remove it so backend will use default
+      if (payload.releaseDate === '') delete payload.releaseDate;
+
       if (isEditing) {
-        await gameApi.update(id, formData);
+        await gameApi.update(id, payload);
         toast.success('Game updated successfully');
       } else {
-        await gameApi.create(formData);
+        await gameApi.create(payload);
         toast.success('Game created successfully');
       }
       navigate('/admin/dashboard');
@@ -218,6 +224,17 @@ const GameForm = () => {
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
+            </div>
+            <div className={styles['form-group']}>
+              <label htmlFor="releaseDate">Release Date</label>
+              <input
+                type="date"
+                id="releaseDate"
+                name="releaseDate"
+                value={formData.releaseDate}
+                onChange={handleChange}
+              />
+              <span className={styles['help-text']}>Set the release date (optional)</span>
             </div>
           </div>
 

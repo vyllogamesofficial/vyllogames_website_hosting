@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { gameApi } from '../../api';
+import { gameApi, platformLinksApi } from '../../api';
 import GameCard from '../GameCard/GameCard';
 import styles from './HomePage.module.css';
 
@@ -8,6 +8,7 @@ const HomePage = () => {
   const [featuredGames, setFeaturedGames] = useState([]);
   const [newGames, setNewGames] = useState([]);
   const [allGames, setAllGames] = useState([]);
+  const [platformLinks, setPlatformLinks] = useState({});
   // Removed loading state
 
   useEffect(() => {
@@ -26,6 +27,15 @@ const HomePage = () => {
       }
     };
     fetchGames();
+    const fetchPlatformLinks = async () => {
+      try {
+        const { data } = await platformLinksApi.get();
+        setPlatformLinks(data || {});
+      } catch (error) {
+        console.error('Error fetching platform links:', error);
+      }
+    };
+    fetchPlatformLinks();
   }, []);
 
   // Removed loading screen
@@ -86,9 +96,25 @@ const HomePage = () => {
       <footer className={styles.footer}>
         <div className={styles['footer-content']}>
           <div className={styles['social-links']}>
-            <a href="#" className={`${styles['social-link']} ${styles.twitter}`}>Twitter</a>
-            <a href="#" className={`${styles['social-link']} ${styles.instagram}`}>Instagram</a>
-            <a href="#" className={`${styles['social-link']} ${styles.youtube}`}>YouTube</a>
+            {(() => {
+              const order = ['Twitter', 'Instagram', 'YouTube', 'Facebook', 'TikTok', 'Twitch', 'Kick', 'LinkedIn', 'Discord', 'Reddit', 'Rednote'];
+              return order.map((platform) => {
+                const url = platformLinks && platformLinks[platform];
+                if (!url) return null;
+                const displayName = platform === 'Twitter' ? 'X' : platform;
+                return (
+                  <a
+                    key={platform}
+                    href={url}
+                    className={styles['social-link']}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {displayName}
+                  </a>
+                );
+              });
+            })()}
           </div>
           <p className={styles.copyright}>© Game Park - All rights reserved</p>
         </div>

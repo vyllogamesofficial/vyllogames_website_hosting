@@ -137,10 +137,7 @@ const GameDetail = () => {
                 <div className={styles['platforms-list']}>
                   {game.platforms?.map(platform => (
                     <span key={platform} className={styles['platform-badge']}>
-                      {PLATFORM_LOGOS[platform] && (
-                        <img src={PLATFORM_LOGOS[platform]} alt={platform} className={styles['platform-logo']} />
-                      )}
-                      {platform}
+                          {platform}
                     </span>
                   ))}
                 </div>
@@ -161,47 +158,47 @@ const GameDetail = () => {
               <div className={styles['links-grid']}>
                 {game.links?.googlePlay && (
                   <a href={game.links.googlePlay} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
-                    <img src={PLATFORM_LOGOS['Google Play (Android)']} alt="Google Play" className={styles['platform-logo']} /> Google Play
+                    Google Play
                   </a>
                 )}
                 {game.links?.appStore && (
                   <a href={game.links.appStore} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
-                    <img src={PLATFORM_LOGOS['App Store (Apple)']} alt="App Store" className={styles['platform-logo']} /> App Store
+                    App Store
                   </a>
                 )}
                 {game.links?.huaweiStore && (
                   <a href={game.links.huaweiStore} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
-                    <img src={PLATFORM_LOGOS['Huawei Store']} alt="Huawei Store" className={styles['platform-logo']} /> Huawei Store
+                    Huawei Store
                   </a>
                 )}
                 {game.links?.amazonAppStore && (
                   <a href={game.links.amazonAppStore} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
-                    <img src={PLATFORM_LOGOS['Amazon App Store']} alt="Amazon App Store" className={styles['platform-logo']} /> Amazon App Store
+                    Amazon App Store
                   </a>
                 )}
                 {game.links?.ps && (
                   <a href={game.links.ps} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
-                    <img src={PLATFORM_LOGOS['PS4/PS5']} alt="PS4/PS5" className={styles['platform-logo']} /> PS4/PS5
+                    PS4/PS5
                   </a>
                 )}
                 {game.links?.xbox && (
                   <a href={game.links.xbox} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
-                    <img src={PLATFORM_LOGOS['XBOX']} alt="XBOX" className={styles['platform-logo']} /> XBOX
+                    XBOX
                   </a>
                 )}
                 {game.links?.nintendoSwitch && (
                   <a href={game.links.nintendoSwitch} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
-                    <img src={PLATFORM_LOGOS['Nintendo Switch 1/2']} alt="Nintendo Switch" className={styles['platform-logo']} /> Nintendo Switch
+                    Nintendo Switch
                   </a>
                 )}
                 {game.links?.steam && (
                   <a href={game.links.steam} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
-                    <img src={PLATFORM_LOGOS['Steam']} alt="Steam" className={styles['platform-logo']} /> Steam
+                    Steam
                   </a>
                 )}
                 {game.links?.epicStore && (
                   <a href={game.links.epicStore} target="_blank" rel="noopener noreferrer" className={styles['download-link']}>
-                    <img src={PLATFORM_LOGOS['Epic Store']} alt="Epic Store" className={styles['platform-logo']} /> Epic Store
+                    Epic Store
                   </a>
                 )}
               </div>

@@ -184,18 +184,22 @@ const AdminDashboard = () => {
           <form onSubmit={handleUpdatePlatformLinks} className={styles['platform-links-form']}>
             {Object.keys(platformLinks).map(platform => (
               <div key={platform} style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center' }}>
-                {SOCIAL_LOGOS[platform] && platformLinks[platform] && (
-                  <img src={SOCIAL_LOGOS[platform]} alt={platform} className={styles['social-logo']} style={{ width: 32, height: 32, marginRight: 8 }} />
-                )}
-                <label htmlFor={`platform-link-${platform}`} style={{ minWidth: 90 }}>{platform}:</label>
-                <input
-                  id={`platform-link-${platform}`}
-                  type="url"
-                  value={platformLinks[platform]}
-                  onChange={e => handlePlatformLinksChange(platform, e.target.value)}
-                  placeholder={`Enter ${platform} link`}
-                  style={{ width: '100%', padding: '0.5rem', marginLeft: 8 }}
-                />
+                {(() => {
+                  const displayName = platform === 'Twitter' ? 'X' : platform;
+                  return (
+                    <>
+                      <label htmlFor={`platform-link-${platform}`} style={{ minWidth: 90 }}>{displayName}:</label>
+                      <input
+                        id={`platform-link-${platform}`}
+                        type="url"
+                        value={platformLinks[platform]}
+                        onChange={e => handlePlatformLinksChange(platform, e.target.value)}
+                        placeholder={`Enter ${displayName} link`}
+                        style={{ width: '100%', padding: '0.5rem', marginLeft: 8 }}
+                      />
+                    </>
+                  );
+                })()}
               </div>
             ))}
             <button type="submit" disabled={updatingLinks} style={{ padding: '0.5rem 1rem' }}>

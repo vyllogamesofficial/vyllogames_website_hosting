@@ -165,6 +165,18 @@
   box-shadow: 1px 1px 0 var(--pixel-shadow);
 }
 
+.release-date {
+  font-family: 'VT323', monospace;
+  background: var(--pixel-tan);
+  color: var(--pixel-brown);
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border: 2px solid var(--pixel-dark);
+  box-shadow: 2px 2px 0 var(--pixel-shadow);
+  margin-left: 8px;
+}
+
 /* Hover highlight effect */
 .game-card::after {
   content: '';

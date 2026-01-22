@@ -100,6 +100,25 @@
   box-sizing: border-box;
 }
 
+/* Style date input to match site aesthetics */
+.form-group input[type="date"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 3px solid var(--pixel-dark);
+  background: var(--pixel-cream);
+  color: var(--pixel-dark);
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  transition: all 0.1s;
+  box-sizing: border-box;
+}
+
+.form-group input[type="date"]:focus {
+  outline: none;
+  border-color: var(--pixel-blue);
+  box-shadow: 4px 4px 0 var(--pixel-tan);
+}
+
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
