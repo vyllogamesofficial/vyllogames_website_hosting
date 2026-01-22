@@ -11,7 +11,6 @@ const AdminLogin = () => {
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [lockInfo, setLockInfo] = useState(null);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -22,7 +21,6 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setLockInfo(null);
 
     if (!formData.email || !formData.password) {
       toast.error('Please fill in all fields');
@@ -36,20 +34,7 @@ const AdminLogin = () => {
         toast.success('Access granted!');
         navigate('/admin/dashboard');
       } else {
-        if (result.locked) {
-          setLockInfo({
-            locked: true,
-            timeRemaining: result.lockTimeRemaining
-          });
-          toast.error(`🔒 Locked for ${result.lockTimeRemaining} minutes`);
-        } else if (result.attemptsRemaining !== undefined && result.attemptsRemaining > 0) {
-          toast.error(`Invalid credentials. ${result.attemptsRemaining} attempts left.`);
-        } else if (result.attemptsRemaining === 0) {
-          setLockInfo({ locked: true, timeRemaining: 30 });
-          toast.error('🔒 Account locked!');
-        } else {
-          toast.error(result.error || 'Access denied');
-        }
+        toast.error(result.error || 'Access denied');
       }
     } catch {
       toast.error('Connection error');
@@ -67,13 +52,7 @@ const AdminLogin = () => {
           <div className={styles['admin-badge']}>🛡️ SUPER ADMIN</div>
           <h1 className={styles['login-title']}>Secure Access</h1>
           
-          {lockInfo?.locked && (
-            <div className={styles['lock-warning']}>
-              <span className={styles['lock-icon']}>🔒</span>
-              <span>ACCESS LOCKED</span>
-              <span className={styles['lock-time']}>Try again in {lockInfo.timeRemaining} min</span>
-            </div>
-          )}
+          {/* Lockout UI removed — backend no longer returns lock info */}
           
           <form onSubmit={handleSubmit} className={styles['login-form']}>
             <div className={styles['form-group']}>
@@ -87,7 +66,7 @@ const AdminLogin = () => {
                 required
                 placeholder="admin@example.com"
                 autoComplete="email"
-                disabled={lockInfo?.locked}
+                disabled={loading}
               />
             </div>
             
@@ -103,13 +82,13 @@ const AdminLogin = () => {
                   required
                   placeholder="••••••••"
                   autoComplete="current-password"
-                  disabled={lockInfo?.locked}
+                  disabled={loading}
                 />
                 <button 
                   type="button" 
                   className={styles['toggle-password']}
                   onClick={() => setShowPassword(!showPassword)}
-                  disabled={lockInfo?.locked}
+                  disabled={loading}
                 >
                   {showPassword ? '🙈' : '👁️'}
                 </button>
@@ -119,7 +98,7 @@ const AdminLogin = () => {
             <button 
               type="submit" 
               className={styles['login-btn']} 
-              disabled={loading || lockInfo?.locked}
+              disabled={loading}
             >
               {loading ? '⏳ Verifying...' : '🔓 Access Dashboard'}
             </button>

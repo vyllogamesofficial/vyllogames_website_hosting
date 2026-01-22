@@ -194,10 +194,7 @@ export const AuthProvider = ({ children }) => {
       const errorData = error.response?.data;
       return { 
         success: false, 
-        error: errorData?.error || 'Login failed',
-        locked: errorData?.locked,
-        attemptsRemaining: errorData?.attemptsRemaining,
-        lockTimeRemaining: errorData?.lockTimeRemaining
+        error: errorData?.error || 'Login failed'
       };
     }
   };

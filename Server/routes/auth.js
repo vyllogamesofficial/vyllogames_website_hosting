@@ -27,56 +27,17 @@ const getSuperAdmin = async () => {
 
 // ============ IN-MEMORY SECURITY STORE ============
 const securityStore = {
-  loginAttempts: 0,
-  lockUntil: null,
   refreshToken: null,
   lastActivity: null,
   sessionId: null,
 };
 
 // ============ SECURITY CONSTANTS ============
-const MAX_LOGIN_ATTEMPTS = 3;
 const ACCESS_TOKEN_EXPIRY = '10m';
 const REFRESH_TOKEN_EXPIRY = '1h';
 const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutes inactivity
 
-// ============ LOCKOUT FUNCTIONS ============
-const incrementLoginAttempts = () => {
-  securityStore.loginAttempts += 1;
-
-  // Dynamic lock times
-  let lockTime = 0;
-  if (securityStore.loginAttempts <= 3) {
-    lockTime = 30 * 1000; // 30s
-  } else if (securityStore.loginAttempts <= 6) {
-    lockTime = 2 * 60 * 1000; // 2min
-  } else {
-    lockTime = 10 * 60 * 1000; // 10min
-  }
-
-  securityStore.lockUntil = Date.now() + lockTime;
-};
-
-const isLocked = () => {
-  if (securityStore.lockUntil && securityStore.lockUntil > Date.now()) {
-    return true;
-  }
-  if (securityStore.lockUntil && securityStore.lockUntil <= Date.now()) {
-    securityStore.lockUntil = null;
-    securityStore.loginAttempts = 0;
-  }
-  return false;
-};
-
-const getLockTimeRemaining = () => {
-  if (!securityStore.lockUntil) return 0;
-  return Math.ceil((securityStore.lockUntil - Date.now()) / 1000); // seconds
-};
-
-const resetLoginAttempts = () => {
-  securityStore.loginAttempts = 0;
-  securityStore.lockUntil = null;
-};
+// NOTE: Lockout/login-attempts removed by request — keep session/refresh token handling only
 
 // ============ SESSION/TOKEN FUNCTIONS ============
 const generateSessionId = () => crypto.randomBytes(32).toString('hex');
@@ -155,35 +116,12 @@ router.post('/login', validateLogin, async (req, res) => {
 
     const superAdmin = await SuperAdmin.findOne({ email: email.toLowerCase() });
     if (!superAdmin) {
-      incrementLoginAttempts();
-      return res.status(401).json({
-        error: 'Invalid credentials',
-        attemptsRemaining: Math.max(0, MAX_LOGIN_ATTEMPTS - securityStore.loginAttempts),
-        locked: isLocked(),
-        lockTimeRemaining: getLockTimeRemaining()
-      });
-    }
-
-    if (isLocked()) {
-      return res.status(423).json({
-        error: `Account locked. Try again in ${getLockTimeRemaining()} seconds.`,
-        locked: true,
-        lockTimeRemaining: getLockTimeRemaining()
-      });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     if (password !== superAdmin.password) {
-      incrementLoginAttempts();
-      return res.status(401).json({
-        error: 'Invalid credentials',
-        attemptsRemaining: Math.max(0, MAX_LOGIN_ATTEMPTS - securityStore.loginAttempts),
-        locked: isLocked(),
-        lockTimeRemaining: getLockTimeRemaining()
-      });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
-
-    // Successful login
-    resetLoginAttempts();
     const sessionId = generateSessionId();
     securityStore.sessionId = sessionId;
 
@@ -269,10 +207,8 @@ router.get('/me', protect, async (req, res) => {
 // Status (debug)
 router.get('/status', (req, res) => {
   res.json({
-    locked: isLocked(),
-    attemptsRemaining: Math.max(0, MAX_LOGIN_ATTEMPTS - securityStore.loginAttempts),
-    lockTimeRemaining: getLockTimeRemaining(),
-    hasActiveSession: !!securityStore.sessionId
+    hasActiveSession: !!securityStore.sessionId,
+    lastActivity: securityStore.lastActivity || null
   });
 });
 
