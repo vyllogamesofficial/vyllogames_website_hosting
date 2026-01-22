@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 import { protect } from '../middleware/auth.js';
 import SuperAdmin from '../models/SuperAdmin.js';
@@ -14,10 +15,12 @@ const getSuperAdmin = async () => {
   let superAdmin = await SuperAdmin.findOne();
   if (!superAdmin) {
     // Create a default admin if none exists
+    const defaultPassword = process.env.ADMIN_PASSWORD || 'Admin@123!';
+    const hashed = await bcrypt.hash(defaultPassword, 10);
     superAdmin = new SuperAdmin({
-      username: 'SuperAdmin',
-      email: 'admin@placeholder.com',
-      password: 'Admin@123!' // plain text
+      username: process.env.ADMIN_USERNAME || 'SuperAdmin',
+      email: (process.env.ADMIN_EMAIL || 'admin@placeholder.com').toLowerCase(),
+      password: hashed
     });
     await superAdmin.save();
     console.log('Seeded default SuperAdmin (please change via dashboard)');
@@ -27,6 +30,8 @@ const getSuperAdmin = async () => {
 
 // ============ IN-MEMORY SECURITY STORE ============
 const securityStore = {
+  loginAttempts: 0,
+  lockUntil: null,
   refreshToken: null,
   lastActivity: null,
   sessionId: null,
@@ -37,8 +42,45 @@ const securityStore = {
 const ACCESS_TOKEN_EXPIRY = '30m'; // access token lifetime
 const REFRESH_TOKEN_EXPIRY = '7d'; // refresh token lifetime
 const SESSION_TIMEOUT = 7 * 24 * 60 * 60 * 1000; // 7 days inactivity
+const MAX_LOGIN_ATTEMPTS = 3;
 
-// NOTE: Lockout/login-attempts removed by request — keep session/refresh token handling only
+// ============ LOCKOUT FUNCTIONS ============
+const incrementLoginAttempts = () => {
+  securityStore.loginAttempts += 1;
+
+  // Dynamic lock times
+  let lockTime = 0;
+  if (securityStore.loginAttempts <= 3) {
+    lockTime = 30 * 1000; // 30s
+  } else if (securityStore.loginAttempts <= 6) {
+    lockTime = 2 * 60 * 1000; // 2min
+  } else {
+    lockTime = 10 * 60 * 1000; // 10min
+  }
+
+  securityStore.lockUntil = Date.now() + lockTime;
+};
+
+const isLocked = () => {
+  if (securityStore.lockUntil && securityStore.lockUntil > Date.now()) {
+    return true;
+  }
+  if (securityStore.lockUntil && securityStore.lockUntil <= Date.now()) {
+    securityStore.lockUntil = null;
+    securityStore.loginAttempts = 0;
+  }
+  return false;
+};
+
+const getLockTimeRemaining = () => {
+  if (!securityStore.lockUntil) return 0;
+  return Math.ceil((securityStore.lockUntil - Date.now()) / 1000); // seconds
+};
+
+const resetLoginAttempts = () => {
+  securityStore.loginAttempts = 0;
+  securityStore.lockUntil = null;
+};
 
 // ============ SESSION/TOKEN FUNCTIONS ============
 const generateSessionId = () => crypto.randomBytes(32).toString('hex');
@@ -89,11 +131,13 @@ router.post(
 
       let superAdmin = await SuperAdmin.findOne();
       if (!superAdmin) {
-        superAdmin = new SuperAdmin({ username, email, password });
+        const hashed = await bcrypt.hash(password, 10);
+        superAdmin = new SuperAdmin({ username, email: email.toLowerCase(), password: hashed });
       } else {
         superAdmin.username = username;
-        superAdmin.email = email;
-        superAdmin.password = password; // plain text
+        superAdmin.email = email.toLowerCase();
+        // Hash incoming password before storing
+        superAdmin.password = await bcrypt.hash(password, 10);
       }
       await superAdmin.save();
       console.log('🔑 Super Admin credentials updated:', { username, email });
@@ -115,27 +159,64 @@ router.post('/login', validateLogin, async (req, res) => {
 
     const { email, password } = req.body;
 
-      // Debug helper - mask passwords for logs
-      const mask = (s) => {
-        if (!s) return '';
-        if (s.length <= 2) return '*'.repeat(s.length);
-        return `${s[0]}${'*'.repeat(Math.max(0, s.length - 2))}${s.slice(-1)}`;
-      };
+    // Debug helper - mask passwords for logs
+    const mask = (s) => {
+      if (!s) return '';
+      if (s.length <= 2) return '*'.repeat(s.length);
+      return `${s[0]}${'*'.repeat(Math.max(0, s.length - 2))}${s.slice(-1)}`;
+    };
 
-      console.log('Login attempt:', { email: email, passwordPreview: mask(password) });
+    console.log('Login attempt:', { email: email, passwordPreview: mask(password) });
+
+    if (isLocked()) {
+      return res.status(423).json({
+        error: `Account locked. Try again in ${getLockTimeRemaining()} seconds.`,
+        locked: true,
+        lockTimeRemaining: getLockTimeRemaining()
+      });
+    }
 
     const superAdmin = await SuperAdmin.findOne({ email: email.toLowerCase() });
     if (!superAdmin) {
-      console.warn('Login failed: no super admin found for email', email.toLowerCase());
-      return res.status(401).json({ error: 'Invalid credentials' });
+      incrementLoginAttempts();
+      return res.status(401).json({
+        error: 'Invalid credentials',
+        attemptsRemaining: Math.max(0, MAX_LOGIN_ATTEMPTS - securityStore.loginAttempts),
+        locked: isLocked(),
+        lockTimeRemaining: getLockTimeRemaining()
+      });
     }
 
-    console.log('Found superAdmin:', { dbEmail: superAdmin.email, dbPasswordPreview: mask(superAdmin.password) });
-
-    if (password !== superAdmin.password) {
-      console.warn('Login failed: password mismatch for', email.toLowerCase());
-      return res.status(401).json({ error: 'Invalid credentials' });
+    // Determine if stored password is hashed
+    let passwordMatch = false;
+    try {
+      if (superAdmin.password && superAdmin.password.startsWith('$2')) {
+        passwordMatch = await bcrypt.compare(password, superAdmin.password);
+      } else {
+        // legacy plaintext match — if matches, re-hash and save
+        if (password === superAdmin.password) {
+          passwordMatch = true;
+          superAdmin.password = await bcrypt.hash(password, 10);
+          await superAdmin.save();
+          console.log('Migrated superAdmin password to hashed value');
+        }
+      }
+    } catch (err) {
+      console.error('Password compare error:', err);
     }
+
+    if (!passwordMatch) {
+      incrementLoginAttempts();
+      return res.status(401).json({
+        error: 'Invalid credentials',
+        attemptsRemaining: Math.max(0, MAX_LOGIN_ATTEMPTS - securityStore.loginAttempts),
+        locked: isLocked(),
+        lockTimeRemaining: getLockTimeRemaining()
+      });
+    }
+
+    // Successful login
+    resetLoginAttempts();
     const sessionId = generateSessionId();
     securityStore.sessionId = sessionId;
 
@@ -221,6 +302,9 @@ router.get('/me', protect, async (req, res) => {
 // Status (debug)
 router.get('/status', (req, res) => {
   res.json({
+    locked: isLocked(),
+    attemptsRemaining: Math.max(0, MAX_LOGIN_ATTEMPTS - securityStore.loginAttempts),
+    lockTimeRemaining: getLockTimeRemaining(),
     hasActiveSession: !!securityStore.sessionId,
     lastActivity: securityStore.lastActivity || null
   });

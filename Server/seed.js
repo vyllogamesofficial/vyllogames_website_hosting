@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import Game from './models/Game.js';
 import SuperAdmin from './models/SuperAdmin.js';
 
@@ -53,17 +54,34 @@ const seedSuperAdmin = async () => {
   try {
     const existingAdmin = await SuperAdmin.findOne();
     if (!existingAdmin) {
-      // const hashedPassword = await bcrypt.hash('12345678', 10);
+      const adminEmail = process.env.ADMIN_EMAIL || 'admin@placeholder.com';
+      const adminUsername = process.env.ADMIN_USERNAME || 'SuperAdmin';
+
+      // Use provided ADMIN_PASSWORD if present, otherwise generate a random one.
+      let adminPassword = process.env.ADMIN_PASSWORD;
+      let generated = false;
+      if (!adminPassword) {
+        adminPassword = crypto.randomBytes(8).toString('hex'); // 16 hex chars
+        generated = true;
+      }
+
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
       const admin = await SuperAdmin.create({
-        username: 'SuperAdmin',
-        email: 'admin@placeholder.com',
-        password: '12345678'
+        username: adminUsername,
+        email: adminEmail,
+        password: hashedPassword
       });
+
       console.log('✅ Super Admin created:', {
         username: admin.username,
-        email: admin.email,
-        password: admin.password
+        email: admin.email
       });
+
+      if (generated) {
+        console.log('⚠️ No ADMIN_PASSWORD env var found — a password was generated for the Super Admin.');
+        console.log('Store this password securely; it will not be shown again:');
+        console.log(`Generated SuperAdmin password: ${adminPassword}`);
+      }
     } else {
       console.log('ℹ️ Super Admin already exists:', {
         username: existingAdmin.username,
