@@ -1,0 +1,7 @@
+# robots.txt for https://www.vyllogames.com/
+# Tell crawlers where your sitemap is located
+Sitemap: https://www.vyllogames.com/sitemap.xml
+
+# Allow everything (adjust as needed)
+User-agent: *
+Allow: /
