@@ -24,6 +24,7 @@ async function startServer() {
   const uploadRoutes = (await import('./routes/upload.js')).default;
   const authRoutes = (await import('./routes/auth.js')).default;
   const platformLinksRoutes = (await import('./routes/platformLinks.js')).default;
+  const sitemapRoutes = (await import('./routes/sitemap.js')).default;
 
   const app = express();
   const PORT = process.env.PORT || 5000;
@@ -145,6 +146,8 @@ async function startServer() {
   app.use('/api/games', gameRoutes);
   app.use('/api/upload', uploadRoutes);
   app.use('/api/platform-links', platformLinksRoutes);
+  // Serve dynamic sitemap generated from DB
+  app.use('/', sitemapRoutes);
 
   // Health check
   app.get('/api/health', (req, res) => {
