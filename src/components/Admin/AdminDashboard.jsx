@@ -82,7 +82,7 @@ const AdminDashboard = () => {
       }
     };
   const [games, setGames] = useState([]);
-  // Removed loading state
+  const [loading, setLoading] = useState(true);
   const [adminUsername, setAdminUsername] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
@@ -128,6 +128,8 @@ const AdminDashboard = () => {
       setGames(data);
     } catch (error) {
       toast.error('Failed to fetch games');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -161,6 +163,19 @@ const AdminDashboard = () => {
   };
 
   // Removed loading screen
+
+  const skeletonRows = loading ? (
+    Array.from({ length: 4 }).map((_, i) => (
+      <tr key={`skel-${i}`} className={styles['skeleton-row']}>
+        <td><div className={styles['skeleton-thumb']} /></td>
+        <td><div className={styles['skeleton-text']} /></td>
+        <td><div className={styles['skeleton-text']} style={{ width: '60%' }} /></td>
+        <td><div className={styles['skeleton-text']} style={{ width: '50%' }} /></td>
+        <td><div className={styles['skeleton-text']} style={{ width: '40%' }} /></td>
+        <td><div className={styles['skeleton-text']} style={{ width: '70%' }} /></td>
+      </tr>
+    ))
+  ) : null;
 
   return (
     <div className={styles['admin-dashboard']}>
@@ -273,7 +288,7 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {games.map(game => {
+              {loading ? skeletonRows : games.map(game => {
                 const imageUrl = game.image?.startsWith('http') 
                   ? game.image 
                   : `${SERVER_URL}${game.image}`;
@@ -323,7 +338,7 @@ const AdminDashboard = () => {
             </tbody>
           </table>
           
-          {games.length === 0 && (
+          {!loading && games.length === 0 && (
             <div className={styles['no-games']}>
               <p>No games found. Add your first game!</p>
               <Link to="/admin/games/new" className={styles['add-game-btn']}>

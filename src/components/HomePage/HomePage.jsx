@@ -9,7 +9,7 @@ const HomePage = () => {
   const [newGames, setNewGames] = useState([]);
   const [allGames, setAllGames] = useState([]);
   const [platformLinks, setPlatformLinks] = useState({});
-  // Removed loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -24,6 +24,8 @@ const HomePage = () => {
         setAllGames(allRes.data);
       } catch (error) {
         console.error('Error fetching games:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchGames();
@@ -65,22 +67,39 @@ const HomePage = () => {
       <section className={`${styles.section} ${styles['new-apps-section']}`}>
         <h2 className={styles['section-title']}>✨ New Apps</h2>
         <div className={styles['new-apps-list']}>
-          {newGames.map(game => (
-            <Link key={game._id} to={`/game/${game._id}`} className={styles['new-app-link']}>
-              <span className={styles['new-badge']}>NEW</span> {game.title}
-            </Link>
-          ))}
+          {loading ? (
+            <>
+              <span className={styles['loading-bar']} />
+              <span className={styles['loading-bar']} style={{ width: '60%' }} />
+              <span className={styles['loading-bar']} style={{ width: '45%' }} />
+            </>
+          ) : newGames.length > 0 ? (
+            newGames.map(game => (
+              <Link key={game._id} to={`/game/${game._id}`} className={styles['new-app-link']}>
+                <span className={styles['new-badge']}>NEW</span> {game.title}
+              </Link>
+            ))
+          ) : (
+            <span className={styles['empty-text']}>No new apps yet</span>
+          )}
         </div>
       </section>
 
       {/* Featured Games Section */}
-      {featuredGames.length > 0 && (
+      {(loading || featuredGames.length > 0) && (
         <section className={`${styles.section} ${styles['featured-section']}`}>
           <h2 className={styles['section-title']}>⭐ Featured Apps</h2>
           <div className={`${styles['games-grid']} ${styles['featured-grid']}`}>
-            {featuredGames.map(game => (
-              <GameCard key={game._id} game={game} featured />
-            ))}
+            {loading ? (
+              <>
+                <div className={styles['skeleton-card']} />
+                <div className={styles['skeleton-card']} />
+              </>
+            ) : (
+              featuredGames.map(game => (
+                <GameCard key={game._id} game={game} featured />
+              ))
+            )}
           </div>
         </section>
       )}
@@ -89,9 +108,19 @@ const HomePage = () => {
       <section className={`${styles.section} ${styles['all-games-section']}`}>
         <h2 className={styles['section-title']}>📱 All Games</h2>
         <div className={styles['games-grid']}>
-          {allGames.map(game => (
-            <GameCard key={game._id} game={game} />
-          ))}
+          {loading ? (
+            <>
+              <div className={styles['skeleton-card']} />
+              <div className={styles['skeleton-card']} />
+              <div className={styles['skeleton-card']} />
+            </>
+          ) : allGames.length > 0 ? (
+            allGames.map(game => (
+              <GameCard key={game._id} game={game} />
+            ))
+          ) : (
+            <p className={styles['empty-text']}>No games found</p>
+          )}
         </div>
       </section>
 

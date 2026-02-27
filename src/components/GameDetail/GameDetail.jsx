@@ -26,7 +26,7 @@ const SERVER_URL = getServerUrl();
 const GameDetail = () => {
   const { id } = useParams();
   const [game, setGame] = useState(null);
-  // Removed loading state
+  const [loading, setLoading] = useState(true);
 
   // Convert YouTube URL to embed URL
   const getYouTubeEmbedUrl = (url) => {
@@ -67,12 +67,32 @@ const GameDetail = () => {
         setGame(data);
       } catch (error) {
         console.error('Error fetching game:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchGame();
   }, [id]);
 
-  // Removed loading screen
+  // Pixel loading screen while fetching
+  if (loading) {
+    return (
+      <div className={styles['game-detail-page']}>
+        <div className={styles['game-detail-container']}>
+          <Link to="/" className={styles['back-link']}>← Back to Games</Link>
+          <div className={styles['game-detail-card']}>
+            <div className={styles['skeleton-header']} />
+            <div className={styles['skeleton-image']} />
+            <div className={styles['skeleton-body']}>
+              <span className={styles['skeleton-line']} />
+              <span className={styles['skeleton-line']} style={{ width: '80%' }} />
+              <span className={styles['skeleton-line']} style={{ width: '55%' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!game) {
     return (

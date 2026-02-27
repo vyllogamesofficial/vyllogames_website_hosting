@@ -336,6 +336,64 @@
   to { transform: rotate(360deg); }
 }
 
+/* --- Inline loading bars (for New Apps list) --- */
+.loading-bar {
+  display: block;
+  width: 75%;
+  height: 28px;
+  background: linear-gradient(90deg, var(--pixel-tan) 25%, var(--pixel-cream) 50%, var(--pixel-tan) 75%);
+  background-size: 200% 100%;
+  border: 3px solid var(--pixel-brown);
+  box-shadow: 3px 3px 0 var(--pixel-shadow);
+  animation: shimmer 1.4s steps(6) infinite;
+}
+
+/* --- Skeleton game card --- */
+.skeleton-card {
+  background: var(--pixel-white);
+  border: 4px solid var(--pixel-dark);
+  box-shadow: 6px 6px 0 var(--pixel-shadow);
+  min-height: 220px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-card::before {
+  content: '';
+  display: block;
+  height: 120px;
+  background: linear-gradient(90deg, var(--pixel-tan) 25%, var(--pixel-cream) 50%, var(--pixel-tan) 75%);
+  background-size: 200% 100%;
+  border-bottom: 4px solid var(--pixel-dark);
+  animation: shimmer 1.4s steps(6) infinite;
+}
+
+.skeleton-card::after {
+  content: 'LOADING...';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100% - 124px);
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.6rem;
+  color: var(--pixel-brown);
+  animation: blink 1s steps(2) infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* --- Empty text fallback --- */
+.empty-text {
+  font-family: 'VT323', monospace;
+  font-size: 1.4rem;
+  color: var(--pixel-brown);
+  text-align: center;
+  padding: 20px;
+}
+
 /* ===== FOOTER ===== */
 .footer {
   background: var(--pixel-dark);
