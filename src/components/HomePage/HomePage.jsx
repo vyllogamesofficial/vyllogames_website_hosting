@@ -48,7 +48,7 @@ const HomePage = () => {
       <section className={styles['hero-section']}>
         <div className={styles['hero-content']}>
           <div className={styles['hero-brand']}>
-            <img src="/Media/VYLLO GAMES.png" alt="VYLLO games logo" className={styles['hero-logo']} />
+            <img src="/Media/vyllo-games.png" alt="VYLLO games logo" className={styles['hero-logo']} />
             <h1 className={styles['hero-title']}>VYLLO games</h1>
           </div>
           <p className={styles['hero-subtitle']}>Magic and dreams in the palm of your hand</p>
@@ -150,7 +150,7 @@ const HomePage = () => {
           </div>
           <p className={styles.copyright}>
             © VYLLO games - All rights reserved
-            <img src="/Media/VYLLO GAMES.png" alt="VYLLO games logo small" className={styles['footer-logo']} />
+            <img src="/Media/vyllo-games.png" alt="VYLLO games logo small" className={styles['footer-logo']} />
           </p>
         </div>
       </footer>
