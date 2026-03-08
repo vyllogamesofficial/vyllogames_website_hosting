@@ -51,7 +51,7 @@ const HomePage = () => {
             <img src="/Media/vyllo-games.png" alt="VYLLO games logo" className={styles['hero-logo']} />
             <h1 className={styles['hero-title']}>VYLLO games</h1>
           </div>
-          <p className={styles['hero-subtitle']}>Magic and dreams in the palm of your hand</p>
+          <p className={styles['hero-subtitle']}>Super Fun Mobile Games for Everyone</p>
           <div className={styles['hero-snow-animation']}></div>
           {/* About Us Section under the name */}
           <div className={styles['about-us']} style={{ marginTop: '32px' }}>
