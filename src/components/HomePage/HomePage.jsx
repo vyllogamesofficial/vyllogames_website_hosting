@@ -150,7 +150,7 @@ const HomePage = () => {
           </div>
           <p className={styles.copyright}>
             © Vyllo Games - All rights reserved
-            <img src="/Media/vyllo-games.png" alt="VYLLO games logo small" className={styles['footer-logo']} />
+            <img src="/Media/vyllo-games.png" alt="Vyllo Games mobile game developer logo small" className={styles['footer-logo']} />
           </p>
         </div>
       </footer>
