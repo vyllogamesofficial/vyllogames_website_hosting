@@ -49,7 +49,7 @@ const HomePage = () => {
         <div className={styles['hero-content']}>
           <div className={styles['hero-brand']}>
             <img src="/Media/vyllo-games.png" alt="VYLLO games logo" className={styles['hero-logo']} />
-            <h1 className={styles['hero-title']}>VYLLO games</h1>
+            <h1 className={styles['hero-title']}>Vyllo Games</h1>
           </div>
           <p className={styles['hero-subtitle']}>Super Fun Mobile Games for Everyone</p>
           <div className={styles['hero-snow-animation']}></div>
