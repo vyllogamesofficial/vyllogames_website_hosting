@@ -1,8 +1,3 @@
-// Platform Links APIs
-export const platformLinksApi = {
-  get: () => api.get('/platform-links'),
-  update: (data) => api.post('/platform-links/update', data),
-};
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -40,6 +35,18 @@ export const uploadApi = {
 export const authApi = {
   getMe: () => api.get('/auth/me'),
   updateSuperAdmin: (data) => api.post('/auth/update-super-admin', data),
+};
+
+// Platform Links APIs
+export const platformLinksApi = {
+  get: () => api.get('/platform-links'),
+  update: (data) => api.post('/platform-links/update', data),
+};
+
+// Website Settings APIs
+export const websiteSettingsApi = {
+  get: () => api.get('/website-settings'),
+  update: (data) => api.post('/website-settings/update', data),
 };
 
 export default api;
