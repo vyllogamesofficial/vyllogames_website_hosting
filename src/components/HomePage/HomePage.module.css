@@ -5,12 +5,14 @@
   margin-left: auto;
   margin-right: auto;
 }
+
 .about-title {
   font-size: 2.2rem;
   font-weight: bold;
   margin-bottom: 18px;
   text-align: center;
 }
+
 .about-us p {
   font-size: 1.25rem;
   line-height: 1.7;
@@ -18,18 +20,22 @@
   color: #222;
   text-align: center;
 }
+
 @media (max-width: 600px) {
   .about-us {
     padding: 18px 8px;
     font-size: 1rem;
   }
+
   .about-title {
     font-size: 1.3rem;
   }
+
   .about-us p {
     font-size: 1.05rem;
   }
 }
+
 .home-page {
   min-height: 100vh;
   background: var(--pixel-cream);
@@ -41,31 +47,26 @@
 
 /* ===== HERO SECTION ===== */
 .hero-section {
-  background: 
-    linear-gradient(180deg, var(--pixel-blue) 0%, var(--pixel-blue-dark) 100%);
-  padding: 60px 20px 80px;
+  padding: 0;
+  margin: 0;
   text-align: center;
   position: relative;
   overflow: hidden;
   border-bottom: 8px solid var(--pixel-dark);
+  background: var(--pixel-blue);
 }
 
-/* Pixel cloud decoration */
+/* Remove old pixel cloud decoration */
 .hero-section::before {
-  content: '';
-  position: absolute;
-  top: 20px;
-  left: 10%;
-  width: 80px;
-  height: 40px;
-  background: var(--pixel-white);
-  box-shadow: 
-    20px 10px 0 var(--pixel-white),
-    -20px 10px 0 var(--pixel-white),
-    120px 30px 0 var(--pixel-white),
-    140px 40px 0 var(--pixel-white),
-    100px 40px 0 var(--pixel-white);
-  opacity: 0.8;
+  display: none;
+  content: none;
+}
+
+.hero-banner-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
 }
 
 .hero-content {
@@ -73,6 +74,7 @@
   margin: 0 auto;
   position: relative;
   z-index: 2;
+  padding: 60px 20px 80px;
 }
 
 .hero-brand {
@@ -87,10 +89,6 @@
   width: 96px;
   height: auto;
   display: block;
-}
-
-/* Nudge the hero logo slightly down to align with the title */
-.hero-logo {
   transform: translateY(-10px);
 }
 
@@ -98,7 +96,7 @@
   font-family: 'Press Start 2P', cursive;
   font-size: 2.2rem;
   color: var(--pixel-white);
-  text-shadow: 
+  text-shadow:
     4px 4px 0 var(--pixel-dark),
     -1px -1px 0 var(--pixel-dark),
     1px -1px 0 var(--pixel-dark),
@@ -123,7 +121,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     radial-gradient(2px 2px at 20px 30px, var(--pixel-yellow), transparent),
     radial-gradient(2px 2px at 80px 60px, var(--pixel-white), transparent),
     radial-gradient(2px 2px at 140px 20px, var(--pixel-yellow), transparent),
@@ -137,8 +135,13 @@
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 0.4; }
+  0%, 100% {
+    opacity: 0.7;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 /* ===== SECTIONS ===== */
@@ -240,8 +243,13 @@
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
 }
 
 /* ===== GAMES GRID ===== */
@@ -333,7 +341,9 @@
 }
 
 @keyframes pixel-load {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* --- Inline loading bars (for New Apps list) --- */
@@ -381,8 +391,13 @@
 }
 
 @keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* --- Empty text fallback --- */
@@ -500,10 +515,6 @@
   margin-left: 10px;
   vertical-align: middle;
   display: inline-block;
-}
-
-/* Nudge the small footer logo up for better baseline alignment */
-.footer-logo {
   transform: translateY(-1px);
 }
 
@@ -514,7 +525,7 @@
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
-  
+
   .hero-title {
     font-size: 1.2rem;
   }
@@ -528,29 +539,39 @@
     width: 18px;
     transform: translateY(-3px);
   }
-  
+
   .hero-subtitle {
     font-size: 1.4rem;
   }
-  
+
   .hero-section {
-    padding: 40px 15px 60px;
+    padding: 0;
     min-height: auto;
   }
-  
+
+  .hero-content {
+    padding: 40px 15px 60px;
+  }
+
+  .hero-banner-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
   .games-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .section {
     padding: 30px 15px;
   }
-  
+
   .section-title {
     font-size: 0.9rem;
   }
-  
+
   .featured-section,
   .all-games-section,
   .new-apps-section {
@@ -566,7 +587,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+
   .footer {
     padding: 40px 15px;
   }
