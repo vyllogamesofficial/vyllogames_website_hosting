@@ -59,14 +59,20 @@ async function startServer() {
   });
 
   // CORS configuration: allow production FRONTEND_URL plus common localhost origins
-  const prodFrontend = process.env.FRONTEND_URL;
-  const localOrigins = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000'
-  ];
-  const whitelist = new Set(localOrigins.concat(prodFrontend ? [prodFrontend] : []));
+const prodFrontends = [
+  process.env.FRONTEND_URL,
+  'https://dashboard.vyllogames.com',
+  'https://vyllogames-website-hosting.vercel.app'
+].filter(Boolean);
+
+const localOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000'
+];
+
+const whitelist = new Set(localOrigins.concat(prodFrontends));
 
   const corsOptions = {
     origin: (origin, callback) => {
