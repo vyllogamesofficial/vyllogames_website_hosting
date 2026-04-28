@@ -29,20 +29,21 @@ async function startServer() {
 
   const app = express();
   app.set('trust proxy', 1);
+
   const PORT = process.env.PORT || 5000;
 
   // ============ SECURITY MIDDLEWARE ============
 
   // Set security HTTP headers
   app.use(helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
     crossOriginEmbedderPolicy: false,
   }));
 
   // Rate limiting - general API
   const generalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 100,
     message: { error: 'Too many requests, please try again later.' },
     standardHeaders: true,
     legacyHeaders: false,
@@ -50,35 +51,41 @@ async function startServer() {
 
   // Strict rate limiting for auth routes
   const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // limit each IP to 5 login attempts per 15 minutes
+    windowMs: 15 * 60 * 1000,
+    max: 5,
     message: { error: 'Too many login attempts. Please try again in 15 minutes.' },
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccessfulRequests: true, // Don't count successful logins
+    skipSuccessfulRequests: true,
   });
 
-  // CORS configuration: allow production FRONTEND_URL plus common localhost origins
-const prodFrontends = [
-  process.env.FRONTEND_URL,
-  'https://dashboard.vyllogames.com',
-  'https://vyllogames-website-hosting.vercel.app'
-].filter(Boolean);
+  // CORS configuration
+  const prodFrontends = [
+    process.env.FRONTEND_URL,
+    'https://vyllogames.com',
+    'https://www.vyllogames.com',
+    'https://dashboard.vyllogames.com',
+    'https://vyllogames-website-hosting.vercel.app'
+  ].filter(Boolean);
 
-const localOrigins = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'http://localhost:3000',
-  'http://127.0.0.1:3000'
-];
+  const localOrigins = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+  ];
 
-const whitelist = new Set(localOrigins.concat(prodFrontends));
+  const whitelist = new Set(localOrigins.concat(prodFrontends));
 
   const corsOptions = {
     origin: (origin, callback) => {
-      // allow non-browser tools like curl/postman (no origin)
+      // Allow non-browser tools like curl/postman with no origin
       if (!origin) return callback(null, true);
-      if (whitelist.has(origin)) return callback(null, true);
+
+      if (whitelist.has(origin)) {
+        return callback(null, true);
+      }
+
       return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
@@ -86,11 +93,12 @@ const whitelist = new Set(localOrigins.concat(prodFrontends));
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   };
+
   app.use(cors(corsOptions));
   console.log('CORS whitelist:', Array.from(whitelist));
 
   // Body parser with size limit
-  app.use(express.json({ limit: '10kb' })); // Limit body size to prevent DoS
+  app.use(express.json({ limit: '10kb' }));
   app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
   // Data sanitization against NoSQL injection
@@ -107,11 +115,10 @@ const whitelist = new Set(localOrigins.concat(prodFrontends));
 
   // ============ DATABASE ============
 
-  // Connect to MongoDB with sensible options and add connection event listeners
   const mongooseOptions = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 30000 // 30s
+    serverSelectionTimeoutMS: 30000
   };
 
   mongoose.connect(process.env.MONGODB_URI, mongooseOptions)
@@ -130,7 +137,6 @@ const whitelist = new Set(localOrigins.concat(prodFrontends));
     console.log('MongoDB reconnected');
   });
 
-  // Periodically ensure connection (helps recover from transient network blips)
   const ensureConnection = async () => {
     if (mongoose.connection.readyState !== 1) {
       try {
@@ -141,13 +147,18 @@ const whitelist = new Set(localOrigins.concat(prodFrontends));
       }
     }
   };
-  setInterval(ensureConnection, 30 * 1000); // try every 30s
+
+  setInterval(ensureConnection, 30 * 1000);
 
   // ============ ROUTES ============
 
   // Root route for Vercel health check
   app.get('/', (req, res) => {
-    res.json({ status: 'ok', message: 'Game Ads API Server', version: '1.0.0' });
+    res.json({
+      status: 'ok',
+      message: 'Game Ads API Server',
+      version: '1.0.0'
+    });
   });
 
   app.use('/api/auth', authRoutes);
@@ -155,12 +166,16 @@ const whitelist = new Set(localOrigins.concat(prodFrontends));
   app.use('/api/upload', uploadRoutes);
   app.use('/api/platform-links', platformLinksRoutes);
   app.use('/api/website-settings', websiteSettingsRoutes);
+
   // Serve dynamic sitemap generated from DB
   app.use('/', sitemapRoutes);
 
   // Health check
   app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', message: 'Game Ads API is running' });
+    res.json({
+      status: 'ok',
+      message: 'Game Ads API is running'
+    });
   });
 
   // 404 handler
@@ -171,10 +186,11 @@ const whitelist = new Set(localOrigins.concat(prodFrontends));
   // Global error handler
   app.use((err, req, res, next) => {
     console.error('Error:', err.message);
-    res.status(err.status || 500).json({ 
-      error: process.env.NODE_ENV === 'production' 
-        ? 'Something went wrong' 
-        : err.message 
+
+    res.status(err.status || 500).json({
+      error: process.env.NODE_ENV === 'production'
+        ? 'Something went wrong'
+        : err.message
     });
   });
 
