@@ -211,7 +211,9 @@ const HomePage = () => {
           </div>
 
           <p className={styles.copyright}>
-            © {new Date().getFullYear()} Vyllo Games. All rights reserved.
+           <span>© {new Date().getFullYear()} Vyllo Games.</span>
+<br />
+<span>All rights reserved.</span>
             <img
               src="/Media/vyllo-games.png"
               alt="Vyllo Games mobile game developer logo small"
