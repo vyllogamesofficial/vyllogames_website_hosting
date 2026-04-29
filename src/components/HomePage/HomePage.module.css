@@ -510,12 +510,12 @@
 }
 
 .footer-logo {
-  width: 36px;
+  width: 40px;
   height: auto;
   margin-left: 10px;
   vertical-align: middle;
   display: inline-block;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 /* ===== RESPONSIVE ===== */
