@@ -19,7 +19,7 @@ async function startServer() {
   const mongoSanitize = (await import('express-mongo-sanitize')).default;
   const hpp = (await import('hpp')).default;
 
-  // Routes - dynamically imported AFTER env vars are set
+  // Routes
   const gameRoutes = (await import('./routes/games.js')).default;
   const uploadRoutes = (await import('./routes/upload.js')).default;
   const authRoutes = (await import('./routes/auth.js')).default;
@@ -32,15 +32,12 @@ async function startServer() {
 
   const PORT = process.env.PORT || 5000;
 
-  // ============ SECURITY MIDDLEWARE ============
-
-  // Set security HTTP headers
+  // SECURITY
   app.use(helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
     crossOriginEmbedderPolicy: false,
   }));
 
-  // Rate limiting - general API
   const generalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
@@ -49,7 +46,6 @@ async function startServer() {
     legacyHeaders: false,
   });
 
-  // Strict rate limiting for auth routes
   const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 5,
@@ -59,7 +55,7 @@ async function startServer() {
     skipSuccessfulRequests: true,
   });
 
-  // CORS configuration
+  // ✅ CORS CONFIG (WITH DEBUG LOG)
   const prodFrontends = [
     process.env.FRONTEND_URL,
     'https://vyllogames.com',
@@ -79,13 +75,15 @@ async function startServer() {
 
   const corsOptions = {
     origin: (origin, callback) => {
-      // Allow non-browser tools like curl/postman with no origin
+      console.log("🌍 Incoming origin:", origin); // 🔥 IMPORTANT DEBUG
+
       if (!origin) return callback(null, true);
 
       if (whitelist.has(origin)) {
         return callback(null, true);
       }
 
+      console.log("❌ Blocked by CORS:", origin);
       return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
@@ -95,26 +93,19 @@ async function startServer() {
   };
 
   app.use(cors(corsOptions));
-  console.log('CORS whitelist:', Array.from(whitelist));
+  console.log('✅ CORS whitelist:', Array.from(whitelist));
 
-  // Body parser with size limit
+  // BODY
   app.use(express.json({ limit: '10kb' }));
   app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-  // Data sanitization against NoSQL injection
   app.use(mongoSanitize());
-
-  // Prevent HTTP Parameter Pollution
   app.use(hpp());
 
-  // Apply general rate limiter to all routes
   app.use('/api', generalLimiter);
-
-  // Apply strict rate limiter to auth routes
   app.use('/api/auth/login', authLimiter);
 
-  // ============ DATABASE ============
-
+  // DATABASE
   const mongooseOptions = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -150,9 +141,7 @@ async function startServer() {
 
   setInterval(ensureConnection, 30 * 1000);
 
-  // ============ ROUTES ============
-
-  // Root route for Vercel health check
+  // ROUTES
   app.get('/', (req, res) => {
     res.json({
       status: 'ok',
@@ -167,10 +156,8 @@ async function startServer() {
   app.use('/api/platform-links', platformLinksRoutes);
   app.use('/api/website-settings', websiteSettingsRoutes);
 
-  // Serve dynamic sitemap generated from DB
   app.use('/', sitemapRoutes);
 
-  // Health check
   app.get('/api/health', (req, res) => {
     res.json({
       status: 'ok',
@@ -178,12 +165,10 @@ async function startServer() {
     });
   });
 
-  // 404 handler
   app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
   });
 
-  // Global error handler
   app.use((err, req, res, next) => {
     console.error('Error:', err.message);
 
