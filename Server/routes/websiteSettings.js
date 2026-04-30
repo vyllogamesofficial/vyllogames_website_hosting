@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
       settings = await WebsiteSettings.create({});
     }
 
-    // Add CORS headers
+    // Add CORS headers for dashboard domain
     res.setHeader("Access-Control-Allow-Origin", "https://dashboard.vyllogames.com");
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -47,7 +47,7 @@ router.post('/update', protect, async (req, res) => {
 
     await settings.save();
 
-    // Add CORS headers
+    // Add CORS headers for dashboard domain
     res.setHeader("Access-Control-Allow-Origin", "https://dashboard.vyllogames.com");
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
