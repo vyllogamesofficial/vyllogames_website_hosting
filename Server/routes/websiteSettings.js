@@ -13,6 +13,12 @@ router.get('/', async (req, res) => {
       settings = await WebsiteSettings.create({});
     }
 
+    // Add CORS headers
+    res.setHeader("Access-Control-Allow-Origin", "https://dashboard.vyllogames.com");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
     res.json(settings);
   } catch (error) {
     console.error('Get website settings error:', error);
@@ -40,6 +46,12 @@ router.post('/update', protect, async (req, res) => {
     }
 
     await settings.save();
+
+    // Add CORS headers
+    res.setHeader("Access-Control-Allow-Origin", "https://dashboard.vyllogames.com");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
     res.json({
       message: 'Website settings updated successfully',
