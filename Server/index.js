@@ -55,27 +55,18 @@ async function startServer() {
     skipSuccessfulRequests: true,
   });
 
-  // ✅ CORS CONFIG (WITH DEBUG LOG)
-  const prodFrontends = [
-    process.env.FRONTEND_URL,
-    'https://vyllogames.com',
-    'https://www.vyllogames.com',
+  // ✅ STRICT CORS CONFIG
+  const whitelist = new Set([
     'https://dashboard.vyllogames.com',
-    'https://vyllogames-website-hosting.vercel.app'
-  ].filter(Boolean);
-
-  const localOrigins = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     'http://localhost:3000',
     'http://127.0.0.1:3000'
-  ];
-
-  const whitelist = new Set(localOrigins.concat(prodFrontends));
+  ]);
 
   const corsOptions = {
     origin: (origin, callback) => {
-      console.log("🌍 Incoming origin:", origin); // 🔥 IMPORTANT DEBUG
+      console.log("🌍 Incoming origin:", origin);
 
       if (!origin) return callback(null, true);
 
